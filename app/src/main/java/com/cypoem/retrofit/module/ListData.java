@@ -7,7 +7,9 @@ import java.util.List;
  */
 
 public class ListData {
-
+    /**
+     * {"list":[{"id":1,"psw":"www","user":"???"},{"id":2,"psw":"SSS","user":"????"},{"id":4,"psw":"32432","user":"??"},{"id":5,"psw":"123","user":"??"},{"id":6,"psw":"h123","user":"houzi"},{"id":15,"psw":"h123","user":"houzi"},{"id":16,"psw":"h123","user":"houzi"}]}
+     */
 
     private List<ListBean> list;
 
