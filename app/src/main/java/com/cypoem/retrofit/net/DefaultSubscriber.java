@@ -13,8 +13,6 @@ import org.reactivestreams.Subscription;
  */
 
 public abstract class DefaultSubscriber<T extends BasicResponse> implements Subscriber<T> {
-    private static Gson sGson = new Gson();
-
 
     @Override
     public void onSubscribe(Subscription s) {
@@ -23,6 +21,7 @@ public abstract class DefaultSubscriber<T extends BasicResponse> implements Subs
 
     @Override
     public void onNext(T response) {
+        // TODO 根据后台返回数据进行配置
         onOk(response);
             switch (response.getStatus()) {
                 case STATUS_OK:
