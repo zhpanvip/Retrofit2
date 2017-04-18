@@ -47,6 +47,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw(), Toast.LENGTH_SHORT).show();
                         }
                     }
+
+                    @Override
+                    public void onNetworkFail(NetworkFailReason reason) {
+                        super.onNetworkFail(reason);
+                        Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
+                    }
                 });
         /*AppClient.getApiService()
                 .getData("json")

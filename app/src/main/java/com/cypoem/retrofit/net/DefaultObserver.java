@@ -32,42 +32,14 @@ abstract public class DefaultObserver<T extends BasicResponse> implements Observ
 
     @Override
     public  void onNext(T response) {
-        onOk(response);
-        try {
-            switch (response.getStatus()) {
-                case STATUS_OK:
+            switch (response.getResultCode()) {
+                case "200":
                     onOk(response);
                     break;
-                case STATUS_FAIL:
-                    onFail(response);
-                    break;
-                case STATUS_ERROR:
+                case "-1":
                 default:
-                    /**
-                     * for Retrofit
-                     */
-                    if (response.getThrowable() != null) {
-                        String className = response.getThrowable().getClass().getCanonicalName();
-                        if (response.getThrowable() instanceof HttpException
-                                || className.startsWith("java.net")
-                                || className.startsWith("javax.net")) {
-                            onNetworkFail(NetworkFailReason.BAD_NETWORK);
-                            return;
-                        }
-                    }
-
-                    onNetworkFail(NetworkFailReason.PARSE_ERROR);
+                    onFail(response);
             }
-        } catch (Throwable throwable) {
-            if (response == null) {
-                response = sGson.fromJson("{}", new TypeToken<T>() {
-                }.getType());
-            }
-            response.setStatus(BasicResponse.Status.STATUS_ERROR)
-                    .setThrowable(throwable);
-           // Timber.tag("OkHttp").w(throwable);
-            onNetworkFail(NetworkFailReason.PARSE_ERROR);
-        }
     }
 
     // region 需要被子类实现的方法
@@ -115,7 +87,18 @@ abstract public class DefaultObserver<T extends BasicResponse> implements Observ
      */
     @Override
     public final void onError(Throwable e) {
+
         Log.e("Retrofit",e.getMessage());
+        if (e != null) {
+            String className = e.getClass().getCanonicalName();
+            if (e instanceof HttpException
+                    || className.startsWith("java.net")
+                    || className.startsWith("javax.net")) {
+                onNetworkFail(NetworkFailReason.BAD_NETWORK);
+                return;
+            }
+        }
+        onNetworkFail(NetworkFailReason.PARSE_ERROR);
     }
 
     // endregion
