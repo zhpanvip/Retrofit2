@@ -1,7 +1,5 @@
 package com.cypoem.retrofit.net;
 
-import android.util.Log;
-
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.NetworkUtils;
 import com.cypoem.retrofit.utils.Utils;
