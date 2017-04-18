@@ -12,7 +12,6 @@ public class BasicResponse {
     // 参数为空
     public static final String RESULT_CODE_EMPTY_PARAM_ERROR = "2";
 
-
     public String errMsg;
 
     String message;
