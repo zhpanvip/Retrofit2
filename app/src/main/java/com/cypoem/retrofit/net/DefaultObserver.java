@@ -1,6 +1,7 @@
 package com.cypoem.retrofit.net;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cypoem.retrofit.module.BasicResponse;
 import com.google.gson.Gson;
@@ -114,7 +115,7 @@ abstract public class DefaultObserver<T extends BasicResponse> implements Observ
      */
     @Override
     public final void onError(Throwable e) {
-
+        Log.e("Retrofit",e.getMessage());
     }
 
     // endregion

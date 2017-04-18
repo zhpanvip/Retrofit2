@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 import com.cypoem.retrofit.module.DataWrapper;
 import com.cypoem.retrofit.module.ListData;
-import com.cypoem.retrofit.net.AppClient;
 import com.cypoem.retrofit.net.DefaultObserver;
+import com.cypoem.retrofit.net.SrcbApi;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void getData(){
-        AppClient.getApiService()
+        SrcbApi.getApiService()
                 .getData("json")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -48,6 +48,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 });
+        /*AppClient.getApiService()
+                .getData("json")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DefaultObserver<DataWrapper>() {
+                    @Override
+                    public void onOk(DataWrapper response) {
+                        Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
+                        List<ListData.ListBean> content = response.getList();
+                        for (int i = 0; i < content.size(); i++) {
+                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });*/
     }
 
     @Override
