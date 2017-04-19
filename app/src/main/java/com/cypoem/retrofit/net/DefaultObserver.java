@@ -1,28 +1,19 @@
 package com.cypoem.retrofit.net;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.cypoem.retrofit.BaseRxActivity;
-import com.cypoem.retrofit.MainActivity;
 import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.utils.ToastUtils;
 import com.google.gson.JsonParseException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
-
 import org.json.JSONException;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.text.ParseException;
-
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-
 import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.BAD_NETWORK;
 import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.CONNECT_ERROR;
 import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.PARSE_ERROR;
