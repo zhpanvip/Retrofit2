@@ -1,6 +1,7 @@
 package com.cypoem.retrofit;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.cypoem.retrofit.utils.Utils;
 
@@ -9,9 +10,14 @@ import com.cypoem.retrofit.utils.Utils;
  */
 
 public class App extends Application {
+    private static App app;
+    public static Context getAppContext() {
+        return app;
+    }
     @Override
     public void onCreate() {
         super.onCreate();
         Utils.init(this);
+        app=this;
     }
 }

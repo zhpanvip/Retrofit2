@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onNetworkFail(NetworkFailReason reason) {
                         super.onNetworkFail(reason);
-                        Toast.makeText(MainActivity.this, "网络连接失败", Toast.LENGTH_SHORT).show();
+
+
                     }
                 });
 
