@@ -69,7 +69,7 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
     public void onNext(T response) {
         // TODO 根据后台返回数据进行配置
         onOk(response);
-        switch (response.getStatus()) {
+        /*switch (response.getStatus()) {
             case STATUS_OK:
                 onOk(response);
                 break;
@@ -78,7 +78,7 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
                 break;
             case STATUS_ERROR:
             default:
-        }
+        }*/
     }
 
     @Override
