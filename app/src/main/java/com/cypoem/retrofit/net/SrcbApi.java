@@ -1,6 +1,5 @@
 package com.cypoem.retrofit.net;
 
-import com.cypoem.retrofit.constant.Constant;
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.NetworkUtils;
 import com.cypoem.retrofit.utils.Utils;
@@ -19,10 +18,9 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import static com.cypoem.retrofit.constant.Constant.DEFAULT_TIMEOUT;
 
 /**
- * Created by dell on 2017/4/1.
+ * Created by zhpan on 2017/4/1.
  */
 
 public class SrcbApi {
@@ -37,8 +35,8 @@ public class SrcbApi {
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(SrcbApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(SrcbApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(interceptor)
                 .addNetworkInterceptor(new HttpCacheInterceptor())
                 .cache(cache)
@@ -51,7 +49,7 @@ public class SrcbApi {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl(Constant.SRCB_BASE_URL)
+                .baseUrl(SrcbApiService.API_SERVER_URL)
                 .build();
         service = retrofit.create(SrcbApiService.class);
     }

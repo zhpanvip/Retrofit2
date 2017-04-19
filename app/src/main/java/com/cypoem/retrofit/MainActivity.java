@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import com.cypoem.retrofit.module.DataWrapper;
 import com.cypoem.retrofit.module.ListData;
-import com.cypoem.retrofit.net.DefaultObserver;
+import com.cypoem.retrofit.net.DefaultSubscriber;
 import com.cypoem.retrofit.net.SrcbApi;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .getData("json")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<DataWrapper>() {
+                .subscribe(new DefaultSubscriber<DataWrapper>() {
                     @Override
                     public void onOk(DataWrapper response) {
                         Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
@@ -51,23 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onNetworkFail(NetworkFailReason reason) {
                         super.onNetworkFail(reason);
-                        Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "网络连接失败", Toast.LENGTH_SHORT).show();
                     }
                 });
-        /*AppClient.getApiService()
-                .getData("json")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<DataWrapper>() {
-                    @Override
-                    public void onOk(DataWrapper response) {
-                        Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
-                        List<ListData.ListBean> content = response.getList();
-                        for (int i = 0; i < content.size(); i++) {
-                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });*/
+
     }
 
     @Override
