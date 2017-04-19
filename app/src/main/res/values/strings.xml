@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Retrofit</string>
+    <string name="title_activity_base_rx">BaseRxActivity</string>
 </resources>

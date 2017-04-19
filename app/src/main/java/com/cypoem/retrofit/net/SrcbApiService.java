@@ -34,7 +34,7 @@ public interface SrcbApiService {
 
 
     @GET(URL_COMMENT_LIST)
-    Flowable<DataWrapper> getData(@Query("method") String method);
+    Observable<DataWrapper> getData(@Query("method") String method);
 
 
 }

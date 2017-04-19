@@ -19,11 +19,15 @@ import org.reactivestreams.Subscription;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.text.ParseException;
-import static com.cypoem.retrofit.net.DefaultSubscriber.NetworkFailReason.BAD_NETWORK;
-import static com.cypoem.retrofit.net.DefaultSubscriber.NetworkFailReason.CONNECT_ERROR;
-import static com.cypoem.retrofit.net.DefaultSubscriber.NetworkFailReason.PARSE_ERROR;
-import static com.cypoem.retrofit.net.DefaultSubscriber.NetworkFailReason.CONNECT_TIMEOUT;
-import static com.cypoem.retrofit.net.DefaultSubscriber.NetworkFailReason.UNKNOWN_ERROR;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
+import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.BAD_NETWORK;
+import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.CONNECT_ERROR;
+import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.PARSE_ERROR;
+import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.CONNECT_TIMEOUT;
+import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.UNKNOWN_ERROR;
 import static com.cypoem.retrofit.net.SrcbApiService.BAD_GATEWAY;
 import static com.cypoem.retrofit.net.SrcbApiService.FORBIDDEN;
 import static com.cypoem.retrofit.net.SrcbApiService.GATEWAY_TIMEOUT;
@@ -37,18 +41,28 @@ import static com.cypoem.retrofit.net.SrcbApiService.UNAUTHORIZED;
  * Created by zhpan on 2017/4/18.
  */
 
-public abstract class DefaultSubscriber<T extends BasicResponse> implements Subscriber<T> {
-    BaseRxActivity mActivity;
+public abstract class DefaultObserver<T extends BasicResponse> implements Observer<T> {
+    private BaseRxActivity mActivity;
+    //  Activity 是否在执行onStop()时取消订阅
+    private boolean isAddInStop=false;
 
-    public DefaultSubscriber(BaseRxActivity activity) {
+
+    public DefaultObserver(BaseRxActivity activity) {
         mActivity = activity;
+    }
 
+    public DefaultObserver(BaseRxActivity activity,boolean isAddInStop) {
+        this.isAddInStop=isAddInStop;
+        mActivity = activity;
     }
 
     @Override
-    public void onSubscribe(Subscription s) {
-        s.request(Long.MAX_VALUE);
-
+    public void onSubscribe(Disposable d) {
+        if(isAddInStop){
+            mActivity.addRxStop(d);
+        }else {
+            mActivity.addRxDestroy(d);
+        }
     }
 
     @Override
@@ -74,10 +88,10 @@ public abstract class DefaultSubscriber<T extends BasicResponse> implements Subs
         if (e instanceof HttpException
                 || className.startsWith("java.net")
                 || className.startsWith("javax.net")) {
-            onNetworkFail(DefaultSubscriber.NetworkFailReason.BAD_NETWORK);
+            onNetworkFail(DefaultObserver.NetworkFailReason.BAD_NETWORK);
             return;
         }
-        onNetworkFail(DefaultSubscriber.NetworkFailReason.PARSE_ERROR);*/
+        onNetworkFail(DefaultObserver.NetworkFailReason.PARSE_ERROR);*/
 
 
         if (e instanceof HttpException) {             //HTTP错误
@@ -145,7 +159,7 @@ public abstract class DefaultSubscriber<T extends BasicResponse> implements Subs
     }
 
 
-    public void onNetworkFail(DefaultSubscriber.NetworkFailReason reason) {
+    public void onNetworkFail(DefaultObserver.NetworkFailReason reason) {
         switch (reason) {
             case PARSE_ERROR:
                 ToastUtils.show("数据解析错误", Toast.LENGTH_SHORT);
@@ -154,7 +168,7 @@ public abstract class DefaultSubscriber<T extends BasicResponse> implements Subs
                 ToastUtils.show("服务器异常", Toast.LENGTH_SHORT);
                 break;
             case CONNECT_ERROR:
-                ToastUtils.show("网络连接失败", Toast.LENGTH_SHORT);
+                ToastUtils.show("网络连接失败,请检查您的网络", Toast.LENGTH_SHORT);
                 break;
             case CONNECT_TIMEOUT:
                 ToastUtils.show("网络连接超时", Toast.LENGTH_SHORT);

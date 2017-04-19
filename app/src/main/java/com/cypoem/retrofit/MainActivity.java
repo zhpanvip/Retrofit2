@@ -8,16 +8,20 @@ import android.widget.Toast;
 
 import com.cypoem.retrofit.module.DataWrapper;
 import com.cypoem.retrofit.module.ListData;
-import com.cypoem.retrofit.net.DefaultSubscriber;
+import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.SrcbApi;
+
+import org.reactivestreams.Subscription;
 
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class MainActivity extends BaseRxActivity implements View.OnClickListener {
+    private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
     private Button btn;
 
     @Override
@@ -34,11 +38,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void getData(){
+
         SrcbApi.getApiService()
                 .getData("json")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultSubscriber<DataWrapper>() {
+                .subscribe(new DefaultObserver<DataWrapper>(this) {
                     @Override
                     public void onOk(DataWrapper response) {
                         Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
@@ -55,7 +60,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 });
+    }
 
+    public boolean addRxStop(Disposable disposable) {
+        if (disposables2Stop == null) {
+            throw new IllegalStateException(
+                    "addUtilStop should be called between onStart and onStop");
+        }
+        disposables2Stop.add(disposable);
+        return true;
     }
 
     @Override
