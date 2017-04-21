@@ -28,7 +28,7 @@ public interface SrcbApiService {
     public static final int DEFAULT_TIMEOUT=5000;
 
     //http://192.168.155.5:8080/springMvc/student.do?method=json
-    String HOST = "http://192.168.155.6:8080/";
+    String HOST = "http://192.168.155.5:8080/";
     String API_SERVER_URL = HOST + "springMvc/";
     String URL_COMMENT_LIST = "student.do";
 

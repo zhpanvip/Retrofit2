@@ -1,7 +1,6 @@
 package com.cypoem.retrofit;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,8 +9,6 @@ import com.cypoem.retrofit.module.DataWrapper;
 import com.cypoem.retrofit.module.ListData;
 import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.SrcbApi;
-
-import org.reactivestreams.Subscription;
 
 import java.util.List;
 
@@ -22,6 +19,8 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseRxActivity implements View.OnClickListener {
     private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
+    //  加载进度的dialog
+    private CustomProgressDialog mProgressDialog;
     private Button btn;
 
     @Override
@@ -45,19 +44,13 @@ public class MainActivity extends BaseRxActivity implements View.OnClickListener
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new DefaultObserver<DataWrapper>(this) {
                     @Override
-                    public void onOk(DataWrapper response) {
+                    public void onSuccess(DataWrapper response) {
                         Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
                         List<ListData.ListBean> content = response.getList();
                         for (int i = 0; i < content.size(); i++) {
-                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw()+content.get
+                                    (i).getUser(), Toast.LENGTH_SHORT).show();
                         }
-                    }
-
-                    @Override
-                    public void onNetworkFail(NetworkFailReason reason) {
-                        super.onNetworkFail(reason);
-
-
                     }
                 });
     }

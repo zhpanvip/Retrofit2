@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Retrofit</string>
     <string name="title_activity_base_rx">BaseRxActivity</string>
+
+    <string name="connect_error">网络连接失败,请检查网络</string>
+    <string name="connect_timeout">连接超时,请稍后再试</string>
+    <string name="bad_network">服务器异常</string>
+    <string name="parse_error">解析服务器响应数据失败</string>
+    <string name="unknown_error">请求网络失败，请稍后再试</string>
+    <string name="response_return_error">服务器返回数据失败</string>
 </resources>

@@ -11,16 +11,44 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class BaseRxActivity extends AppCompatActivity {
+    //  加载进度的dialog
+    private CustomProgressDialog mProgressDialog;
     private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
     private CompositeDisposable disposables2Destroy;// 管理Destroy取消订阅者者
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProgressDialog = CustomProgressDialog.createDialog(this);
+        mProgressDialog.setCanceledOnTouchOutside(false);
         if (disposables2Destroy != null) {
             throw new IllegalStateException("onCreate called multiple times");
         }
         disposables2Destroy = new CompositeDisposable();
 
+    }
+
+    /**
+     * 显示ProgressDialog
+     */
+    public void showProgress(String msg) {
+        mProgressDialog.setMessage(msg);
+        mProgressDialog.show();
+    }
+    /**
+     * 显示ProgressDialog
+     */
+    public void showProgress() {
+        mProgressDialog.show();
+    }
+
+    /**
+     * 取消ProgressDialog
+     */
+    public void dismissProgress() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
     }
 
     public boolean addRxStop(Disposable disposable) {

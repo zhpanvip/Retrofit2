@@ -1,32 +1,26 @@
 package com.cypoem.retrofit.net;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 import com.cypoem.retrofit.BaseRxActivity;
+import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.BasicResponse;
+import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.ToastUtils;
 import com.google.gson.JsonParseException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import org.json.JSONException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.BAD_NETWORK;
-import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.CONNECT_ERROR;
-import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.PARSE_ERROR;
-import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.CONNECT_TIMEOUT;
-import static com.cypoem.retrofit.net.DefaultObserver.NetworkFailReason.UNKNOWN_ERROR;
-import static com.cypoem.retrofit.net.SrcbApiService.BAD_GATEWAY;
-import static com.cypoem.retrofit.net.SrcbApiService.FORBIDDEN;
-import static com.cypoem.retrofit.net.SrcbApiService.GATEWAY_TIMEOUT;
-import static com.cypoem.retrofit.net.SrcbApiService.INTERNAL_SERVER_ERROR;
-import static com.cypoem.retrofit.net.SrcbApiService.NOT_FOUND;
-import static com.cypoem.retrofit.net.SrcbApiService.REQUEST_TIMEOUT;
-import static com.cypoem.retrofit.net.SrcbApiService.SERVICE_UNAVAILABLE;
-import static com.cypoem.retrofit.net.SrcbApiService.UNAUTHORIZED;
+import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.BAD_NETWORK;
+import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.CONNECT_ERROR;
+import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.CONNECT_TIMEOUT;
+import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.PARSE_ERROR;
+import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.UNKNOWN_ERROR;
 
 /**
  * Created by zhpan on 2017/4/18.
@@ -35,144 +29,117 @@ import static com.cypoem.retrofit.net.SrcbApiService.UNAUTHORIZED;
 public abstract class DefaultObserver<T extends BasicResponse> implements Observer<T> {
     private BaseRxActivity mActivity;
     //  Activity 是否在执行onStop()时取消订阅
-    private boolean isAddInStop=false;
-
+    private boolean isAddInStop = false;
 
     public DefaultObserver(BaseRxActivity activity) {
         mActivity = activity;
+        mActivity.showProgress();
     }
 
-    public DefaultObserver(BaseRxActivity activity,boolean isAddInStop) {
-        this.isAddInStop=isAddInStop;
+    public DefaultObserver(BaseRxActivity activity, boolean isShowLoading) {
         mActivity = activity;
+        if (isShowLoading) {
+            mActivity.showProgress();
+        }
     }
 
     @Override
     public void onSubscribe(Disposable d) {
-        if(isAddInStop){
+        if (isAddInStop) {    //  在onStop中取消订阅
             mActivity.addRxStop(d);
-        }else {
+        } else { //  在onDestroy中取消订阅
             mActivity.addRxDestroy(d);
         }
     }
 
     @Override
     public void onNext(T response) {
-        // TODO 根据后台返回数据进行配置
-        onOk(response);
-        /*switch (response.getStatus()) {
-            case STATUS_OK:
-                onOk(response);
-                break;
-            case STATUS_FAIL:
-                onFail(response);
-                break;
-            case STATUS_ERROR:
-            default:
-        }*/
+        mActivity.dismissProgress();
+        if (response.getCode() == 200) {
+            onSuccess(response);
+        } else {
+            onFail(response);
+        }
     }
 
     @Override
     public void onError(Throwable e) {
-        Log.e("Retrofit", e.getMessage());
-       /* String className = e.getClass().getCanonicalName();
-        if (e instanceof HttpException
-                || className.startsWith("java.net")
-                || className.startsWith("javax.net")) {
-            onNetworkFail(DefaultObserver.NetworkFailReason.BAD_NETWORK);
-            return;
-        }
-        onNetworkFail(DefaultObserver.NetworkFailReason.PARSE_ERROR);*/
+        LogUtils.e("Retrofit", e.getMessage());
 
-
-        if (e instanceof HttpException) {             //HTTP错误
-            HttpException httpException = (HttpException) e;
-            switch (httpException.code()) {
-                case UNAUTHORIZED:
-                case FORBIDDEN:
-                case NOT_FOUND:
-                case REQUEST_TIMEOUT:
-                case GATEWAY_TIMEOUT:
-                case INTERNAL_SERVER_ERROR:
-                case BAD_GATEWAY:
-                case SERVICE_UNAVAILABLE:
-                default:
-                    onNetworkFail(BAD_NETWORK); //均视为网络错误
-                    break;
-            }
-            return;
-        } /*else if (e instanceof ServerException) {    //服务器返回的错误
-            ServerException resultException = (ServerException) e;
-            ex = new ApiException(resultException, resultException.getCode());
-            ex.setDisplayMessage(resultException.getMsg());
-            return ex;
-        }*/ else if (e instanceof JsonParseException
+        mActivity.dismissProgress();
+        if (e instanceof HttpException) {     //   HTTP错误
+            onException(BAD_NETWORK);
+        } else if (e instanceof ConnectException
+                ||e instanceof UnknownHostException) {   //   连接错误
+            onException(CONNECT_ERROR);
+        } else if (e instanceof InterruptedIOException) {   //  连接超时
+            onException(CONNECT_TIMEOUT);
+        } else if (e instanceof JsonParseException
                 || e instanceof JSONException
-                || e instanceof ParseException) {
-            onNetworkFail(PARSE_ERROR);
-            return;
-        } else if (e instanceof ConnectException) {
-            onNetworkFail(CONNECT_ERROR);
-            return;
-        } else if (e instanceof InterruptedIOException) {
-            onNetworkFail(CONNECT_TIMEOUT);
+                || e instanceof ParseException) {   //  解析错误
+            onException(PARSE_ERROR);
         } else {
-            onNetworkFail(UNKNOWN_ERROR);
-            return;
+            onException(UNKNOWN_ERROR);
         }
     }
-
 
     @Override
     public void onComplete() {
-
     }
 
     /**
-     * 且请求状态被置为成功(resultCode == 1)
+     * 请求成功
+     * @param response 服务器返回的数据
      */
-    abstract public void onOk(T response);
+    abstract public void onSuccess(T response);
 
     /**
-     * 但请求状态被置为不成功(resultCode != 1)
+     * 服务器返回数据，但响应码不为200
+     * @param response 服务器返回的数据
      */
     public void onFail(T response) {
         String message = response.getMessage();
-
         if (TextUtils.isEmpty(message)) {
-            message = response.errMsg;
-        }
-        if (TextUtils.isEmpty(message)) {
-            ToastUtils.show("");
+            ToastUtils.show(R.string.response_return_error);
         } else {
             ToastUtils.show(message);
         }
     }
 
-
-    public void onNetworkFail(DefaultObserver.NetworkFailReason reason) {
+    /**
+     * 请求异常
+     * @param reason
+     */
+    public void onException(ExceptionReason reason) {
+        mActivity.dismissProgress();
         switch (reason) {
-            case PARSE_ERROR:
-                ToastUtils.show("数据解析错误", Toast.LENGTH_SHORT);
-                break;
-            case BAD_NETWORK:
-                ToastUtils.show("服务器异常", Toast.LENGTH_SHORT);
-                break;
             case CONNECT_ERROR:
-                ToastUtils.show("网络连接失败,请检查您的网络", Toast.LENGTH_SHORT);
+                ToastUtils.show(R.string.connect_error, Toast.LENGTH_SHORT);
                 break;
+
             case CONNECT_TIMEOUT:
-                ToastUtils.show("网络连接超时", Toast.LENGTH_SHORT);
+                ToastUtils.show(R.string.connect_timeout, Toast.LENGTH_SHORT);
                 break;
+
+            case BAD_NETWORK:
+                ToastUtils.show(R.string.bad_network, Toast.LENGTH_SHORT);
+                break;
+
+            case PARSE_ERROR:
+                ToastUtils.show(R.string.parse_error, Toast.LENGTH_SHORT);
+                break;
+
             case UNKNOWN_ERROR:
             default:
-                ToastUtils.show("未知错误", Toast.LENGTH_SHORT);
+                ToastUtils.show(R.string.unknown_error, Toast.LENGTH_SHORT);
                 break;
         }
     }
 
-    // endregion
-    public enum NetworkFailReason {
+    /**
+     *  请求网络失败原因
+     */
+    public enum ExceptionReason {
         /**
          * 解析数据失败
          */
