@@ -1,23 +1,16 @@
 package com.cypoem.retrofit;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.cypoem.retrofit.module.DataWrapper;
-import com.cypoem.retrofit.module.ListData;
+import com.cypoem.retrofit.module.bean.Meizi;
+import com.cypoem.retrofit.module.wrapper.MeiziWrapper;
 import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.SrcbApi;
-
-import org.reactivestreams.Subscription;
-
 import java.util.List;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends BaseRxActivity implements View.OnClickListener {
@@ -40,36 +33,21 @@ public class MainActivity extends BaseRxActivity implements View.OnClickListener
     public void getData(){
 
         SrcbApi.getApiService()
-                .getData("json")
+                .getMeizi()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<DataWrapper>(this) {
+                .subscribe(new DefaultObserver<MeiziWrapper>(this) {
                     @Override
-                    public void onOk(DataWrapper response) {
+                    public void onSuccess(MeiziWrapper response) {
                         Toast.makeText(MainActivity.this, "请求数据成功", Toast.LENGTH_SHORT).show();
-                        List<ListData.ListBean> content = response.getList();
-                        for (int i = 0; i < content.size(); i++) {
-                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "条数据Password:" + content.get(i).getPsw(), Toast.LENGTH_SHORT).show();
+                        List<Meizi.ResultsBean> content = response.getResults();
+                        for (int i = 0; i < 3; i++) {
+                            Toast.makeText(MainActivity.this, "第" + (i + 1) + "个妹子Url:" + content.get(i).getUrl(), Toast.LENGTH_SHORT).show();
                         }
-                    }
-
-                    @Override
-                    public void onNetworkFail(NetworkFailReason reason) {
-                        super.onNetworkFail(reason);
-
-
                     }
                 });
     }
 
-    public boolean addRxStop(Disposable disposable) {
-        if (disposables2Stop == null) {
-            throw new IllegalStateException(
-                    "addUtilStop should be called between onStart and onStop");
-        }
-        disposables2Stop.add(disposable);
-        return true;
-    }
 
     @Override
     public void onClick(View v) {

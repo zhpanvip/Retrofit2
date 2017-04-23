@@ -10,7 +10,7 @@ import android.view.View;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
-public class BaseRxActivity extends AppCompatActivity {
+public class BaseRxActivity extends AppCompatActivity implements BaseImpl {
     private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
     private CompositeDisposable disposables2Destroy;// 管理Destroy取消订阅者者
     @Override
