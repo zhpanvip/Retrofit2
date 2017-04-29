@@ -23,11 +23,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by zhpan on 2017/4/1.
  */
 
-public class SrcbApi {
+public class IdeaApi {
     private Retrofit retrofit;
-    private SrcbApiService service;
+    private IdeaApiService service;
 
-    private SrcbApi() {
+    private IdeaApi() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -35,13 +35,12 @@ public class SrcbApi {
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(SrcbApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .connectTimeout(SrcbApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(interceptor)
                 .addNetworkInterceptor(new HttpCacheInterceptor())
                 .cache(cache)
                 .build();
-
 
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
 
@@ -49,26 +48,25 @@ public class SrcbApi {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl(SrcbApiService.API_SERVER_URL)
+                .baseUrl(IdeaApiService.API_SERVER_URL)
                 .build();
-        service = retrofit.create(SrcbApiService.class);
+        service = retrofit.create(IdeaApiService.class);
     }
 
     //  创建单例
     private static class SingletonHolder {
-        private static final SrcbApi INSTANCE = new SrcbApi();
+        private static final IdeaApi INSTANCE = new IdeaApi();
     }
-    public static SrcbApiService getApiService() {
+    public static IdeaApiService getApiService() {
         return SingletonHolder.INSTANCE.service;
     }
-
 
     class HttpCacheInterceptor implements Interceptor {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            if (!NetworkUtils.isConnected()) {
+            if (!NetworkUtils.isConnected()) {  //没网强制从缓存读取
                 request = request.newBuilder()
                         .cacheControl(CacheControl.FORCE_CACHE)
                         .build();

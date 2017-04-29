@@ -11,8 +11,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class BaseRxActivity extends AppCompatActivity implements BaseImpl {
+    private CustomProgressDialog mProgressDialog;
     private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
     private CompositeDisposable disposables2Destroy;// 管理Destroy取消订阅者者
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +22,19 @@ public class BaseRxActivity extends AppCompatActivity implements BaseImpl {
             throw new IllegalStateException("onCreate called multiple times");
         }
         disposables2Destroy = new CompositeDisposable();
+        mProgressDialog = CustomProgressDialog.createDialog(this);
+        mProgressDialog.setCanceledOnTouchOutside(false);
+    }
 
+
+    @Override
+    public void showProgress(String msg) {
+        mProgressDialog.show();
+    }
+
+    @Override
+    public void dismissProgress() {
+        mProgressDialog.dismiss();
     }
 
     public boolean addRxStop(Disposable disposable) {

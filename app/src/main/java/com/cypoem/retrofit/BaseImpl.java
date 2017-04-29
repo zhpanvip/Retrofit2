@@ -18,4 +18,14 @@ public interface BaseImpl {
 
     void remove(Disposable disposable);
 
+    /**
+     * 显示ProgressDialog
+     */
+    void showProgress(String msg);
+
+    /**
+     * 取消ProgressDialog
+     */
+    void dismissProgress();
+
 }

@@ -3,13 +3,20 @@ package com.cypoem.retrofit.module;
 /**
  *
  */
-public class BasicResponse {
+public class BasicResponse<T> {
 
     private int code;
     private String message;
-    private String errMsg;
-
+    private T content;
     private boolean error;
+
+    public T getContent() {
+        return content;
+    }
+
+    public void setContent(T content) {
+        this.content = content;
+    }
 
     public boolean isError() {
         return error;
@@ -17,10 +24,6 @@ public class BasicResponse {
 
     public void setError(boolean error) {
         this.error = error;
-    }
-
-    public String getErrMsg() {
-        return errMsg;
     }
 
     public int getCode() {
