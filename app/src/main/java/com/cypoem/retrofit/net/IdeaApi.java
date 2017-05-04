@@ -1,5 +1,7 @@
 package com.cypoem.retrofit.net;
 
+import android.util.Log;
+
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.NetworkUtils;
 import com.cypoem.retrofit.utils.Utils;
@@ -8,6 +10,8 @@ import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
@@ -28,9 +32,22 @@ public class IdeaApi {
     private IdeaApiService service;
 
     private IdeaApi() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+       /* HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);*/
 
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                try {
+                    String text = URLDecoder.decode(message, "utf-8");
+                    LogUtils.e("OKHttp-----", text);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    LogUtils.e("OKHttp-----", message);
+                }
+            }
+        });
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         File cacheFile = new File(Utils.getContext().getCacheDir(), "cache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
