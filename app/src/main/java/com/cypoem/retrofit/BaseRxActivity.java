@@ -22,19 +22,37 @@ public class BaseRxActivity extends AppCompatActivity implements BaseImpl {
             throw new IllegalStateException("onCreate called multiple times");
         }
         disposables2Destroy = new CompositeDisposable();
-        mProgressDialog = CustomProgressDialog.createDialog(this);
-        mProgressDialog.setCanceledOnTouchOutside(false);
+
     }
 
 
-    @Override
+    /**
+     * 显示ProgressDialog
+     */
     public void showProgress(String msg) {
+        mProgressDialog= new CustomProgressDialog.Builder(this)
+                .setMessage(msg)
+                .setTheme(R.style.ProgressDialogStyle)
+                .build();
+        mProgressDialog.show();
+    }
+    /**
+     * 显示ProgressDialog
+     */
+    public void showProgress() {
+        mProgressDialog= new CustomProgressDialog.Builder(this)
+                .setTheme(R.style.ProgressDialogStyle)
+                .build();
         mProgressDialog.show();
     }
 
-    @Override
+    /**
+     * 取消ProgressDialog
+     */
     public void dismissProgress() {
-        mProgressDialog.dismiss();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
     }
 
     public boolean addRxStop(Disposable disposable) {

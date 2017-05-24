@@ -3,7 +3,9 @@ package com.cypoem.retrofit;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.view.Gravity;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,48 +14,92 @@ import android.widget.TextView;
  */
 
 public class CustomProgressDialog extends Dialog {
-    private static CustomProgressDialog mProgressDialog;
+    private View mDialogView;
+    private boolean cancelTouchOutside;
+    private AnimationDrawable animationDrawable;
 
-    private Context context;
-    public CustomProgressDialog(Context context) {
-        super(context);
-        this.context = context;
+    public CustomProgressDialog(Builder builder) {
+        super(builder.context);
+        mDialogView = builder.mDialogView;
+        cancelTouchOutside = builder.cancelTouchOutside;
     }
 
-    public CustomProgressDialog(Context context, int themeResId) {
-        super(context, themeResId);
+    private CustomProgressDialog(Builder builder, int themeResId) {
+        super(builder.context, themeResId);
+        mDialogView = builder.mDialogView;
+        cancelTouchOutside = builder.cancelTouchOutside;
     }
 
-    protected CustomProgressDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
-        super(context, cancelable, cancelListener);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(mDialogView);
+        setCanceledOnTouchOutside(cancelTouchOutside);
     }
-    //创建dialog的样式
-    public static CustomProgressDialog createDialog(Context context){
 
-        mProgressDialog = new CustomProgressDialog(context, R.style.ProgressDialogStyle);
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.setContentView(R.layout.dialog_progress);
-        mProgressDialog.getWindow().getAttributes().gravity = Gravity.CENTER;
-        return mProgressDialog;
-    }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-
-        if (mProgressDialog == null) {
+        if (mDialogView == null) {
             return;
         }
         //添加控件  执行帧动画
-        ImageView imageView = (ImageView) mProgressDialog.findViewById(R.id.loadingImageView);
-        AnimationDrawable animationDrawable = (AnimationDrawable) imageView.getBackground();
+        ImageView imageView = (ImageView) mDialogView.findViewById(R.id.loadingImageView);
+        animationDrawable = (AnimationDrawable) imageView.getBackground();
         animationDrawable.start();
     }
 
-    public CustomProgressDialog setMessage(String strMessage){
-        TextView tvMessage = (TextView) mProgressDialog.findViewById(R.id.tv_loadingmsg);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        animationDrawable.stop();
+    }
 
-        if (tvMessage != null){
-            tvMessage.setText(strMessage);
+    public static final class Builder {
+        Context context;
+        private int resStyle = -1;
+        private View mDialogView;
+        private boolean cancelTouchOutside;
+
+        public Builder(Context context) {
+            this.context = context;
+            mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_progress, null);
         }
-        return mProgressDialog;
+
+        /**
+         * 设置主题
+         * @param resStyle style id
+         * @return CustomProgressDialog.Builder
+         */
+        public Builder setTheme(int resStyle) {
+            this.resStyle = resStyle;
+            return this;
+        }
+
+        public Builder setMessage(String message) {
+            TextView tvMessage = (TextView) mDialogView.findViewById(R.id.tv_loadingmsg);
+            if (tvMessage != null) {
+                tvMessage.setText(message);
+            }
+            return this;
+        }
+
+        /**
+         * 设置点击dialog外部是否取消dialog
+         *
+         * @param val 点击外部是否取消dialog
+         * @return
+         */
+        public Builder cancelTouchOutside(boolean val) {
+            cancelTouchOutside = val;
+            return this;
+        }
+
+        public CustomProgressDialog build() {
+            if (resStyle != -1) {
+                return new CustomProgressDialog(this, resStyle);
+            } else {
+                return new CustomProgressDialog(this);
+            }
+        }
     }
 }
