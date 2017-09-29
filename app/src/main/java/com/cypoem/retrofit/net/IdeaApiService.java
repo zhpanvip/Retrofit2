@@ -2,7 +2,6 @@ package com.cypoem.retrofit.net;
 
 import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
-import com.cypoem.retrofit.module.wrapper.MeiziWrapper;
 
 import java.util.List;
 
@@ -26,18 +25,14 @@ public interface IdeaApiService {
 
 
     @GET("福利/10/1")
-    Observable<MeiziWrapper> getData();
-
-    @GET("福利/10/1")
     Observable<BasicResponse<List<MeiZi>>> getMezi();
 
     /**
-     *  设置缓存 缓存时间为100s
      * @param page
      * @param number
      * @return
      */
-    @Headers("Cache-Control: public, max-age=100")
+    @Headers("Cache-Control: public, max-age=100")//设置缓存 缓存时间为100s
     @GET("everySay/selectAll.do")
     Observable<BasicResponse<List<MeiZi>>> lookBack(@Query("page") int page, @Query("rows") int number);
 
