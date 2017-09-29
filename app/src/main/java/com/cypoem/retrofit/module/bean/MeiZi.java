@@ -4,7 +4,7 @@ package com.cypoem.retrofit.module.bean;
  * Created by zhpan on 2017/9/30.
  */
 
-public class MeZi {
+public class MeiZi {
     /**
      * _id : 59cd9b53421aa9727fdb25eb
      * createdAt : 2017-09-29T09:01:07.894Z

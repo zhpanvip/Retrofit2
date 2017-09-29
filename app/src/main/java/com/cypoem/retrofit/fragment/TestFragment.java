@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.BasicResponse;
-import com.cypoem.retrofit.module.bean.MeZi;
+import com.cypoem.retrofit.module.bean.MeiZi;
 import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.IdeaApi;
 
@@ -34,13 +34,13 @@ public class TestFragment extends BaseFragment {
 
         IdeaApi.getApiService()
                 .getMezi()
-                .compose(this.<BasicResponse<List<MeZi>>>bindToLifecycle())
+                .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeZi>>>(getActivity()) {
+                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>(getActivity()) {
                     @Override
-                    public void onSuccess(BasicResponse<List<MeZi>> response) {
-                        List<MeZi> results = response.getResults();
+                    public void onSuccess(BasicResponse<List<MeiZi>> response) {
+                        List<MeiZi> results = response.getResults();
                         showToast("请求成功，妹子个数为"+results.size());
                     }
                 });
