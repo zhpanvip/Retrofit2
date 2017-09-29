@@ -28,6 +28,7 @@ ext {
     butterknifeVersion = '8.5.1'
     rxjava2Version = '2.0.8'
     retrofit2Version = '2.2.0'
+    rxlifecycle='2.1.0'
     gsonVersion = '2.8.0'
 
     releaseVersionCode = 1

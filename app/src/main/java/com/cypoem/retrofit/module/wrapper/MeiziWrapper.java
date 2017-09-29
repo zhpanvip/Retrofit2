@@ -1,7 +1,7 @@
 package com.cypoem.retrofit.module.wrapper;
 
 import com.cypoem.retrofit.module.BasicResponse;
-import com.cypoem.retrofit.module.bean.Meizi;
+import com.cypoem.retrofit.module.bean.Results;
 import java.util.List;
 
 /**
@@ -9,13 +9,13 @@ import java.util.List;
  */
 
 public class MeiziWrapper extends BasicResponse {
-    List<Meizi.ResultsBean> results;
+    List<Results.ResultsBean> results;
 
-    public List<Meizi.ResultsBean> getResults() {
+    public List<Results.ResultsBean> getResults() {
         return results;
     }
 
-    public void setResults(List<Meizi.ResultsBean> results) {
+    public void setResults(List<Results.ResultsBean> results) {
         this.results = results;
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
  * Created by zhpan on 2017/4/20.
  */
 
-public class Meizi {
+public class Results {
 
     /**
      * error : false

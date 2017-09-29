@@ -7,15 +7,15 @@ public class BasicResponse<T> {
 
     private int code;
     private String message;
-    private T content;
+    private T results;
     private boolean error;
 
-    public T getContent() {
-        return content;
+    public T getResults() {
+        return results;
     }
 
-    public void setContent(T content) {
-        this.content = content;
+    public void setResults(T results) {
+        this.results = results;
     }
 
     public boolean isError() {

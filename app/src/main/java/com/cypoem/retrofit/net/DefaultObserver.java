@@ -1,11 +1,12 @@
 package com.cypoem.retrofit.net;
 
+import android.app.Activity;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.cypoem.retrofit.BaseImpl;
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.BasicResponse;
+import com.cypoem.retrofit.utils.CommonDialogUtils;
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.ToastUtils;
 import com.google.gson.JsonParseException;
@@ -29,33 +30,32 @@ import static com.cypoem.retrofit.net.DefaultObserver.ExceptionReason.UNKNOWN_ER
  */
 
 public abstract class DefaultObserver<T extends BasicResponse> implements Observer<T> {
-    private BaseImpl mBaseImpl;
+    private Activity activity;
     //  Activity 是否在执行onStop()时取消订阅
     private boolean isAddInStop = false;
-
-    public DefaultObserver(BaseImpl baseImpl) {
-        mBaseImpl = baseImpl;
+    private CommonDialogUtils dialogUtils;
+    public DefaultObserver(Activity activity) {
+        this.activity = activity;
+        dialogUtils=new CommonDialogUtils();
+        dialogUtils.showProgress(activity);
     }
 
-    public DefaultObserver(BaseImpl baseImpl, boolean isShowLoading) {
-        mBaseImpl = baseImpl;
+    public DefaultObserver(Activity activity, boolean isShowLoading) {
+        this.activity = activity;
+        dialogUtils=new CommonDialogUtils();
         if (isShowLoading) {
-            mBaseImpl.showProgress("正在加载...");
+            dialogUtils.showProgress(activity,"Loading...");
         }
     }
 
     @Override
     public void onSubscribe(Disposable d) {
-        if (isAddInStop) {    //  在onStop中取消订阅
-            mBaseImpl.addRxStop(d);
-        } else { //  在onDestroy中取消订阅
-            mBaseImpl.addRxDestroy(d);
-        }
+
     }
 
     @Override
     public void onNext(T response) {
-        mBaseImpl.dismissProgress();
+        dismissProgress();
         if (!response.isError()) {
             onSuccess(response);
         } else {
@@ -68,10 +68,16 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
         }*/
     }
 
+    private void dismissProgress(){
+        if(dialogUtils!=null){
+            dialogUtils.dismissProgress();
+        }
+    }
+
     @Override
     public void onError(Throwable e) {
         LogUtils.e("Retrofit", e.getMessage());
-        mBaseImpl.dismissProgress();
+        dismissProgress();
         if (e instanceof HttpException) {     //   HTTP错误
             onException(ExceptionReason.BAD_NETWORK);
         } else if (e instanceof ConnectException
