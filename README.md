@@ -20,4 +20,4 @@ IdeaApi.getApiService()
                     }
                 });
 ```
-[详细介绍](http://blog.csdn.net/qq_20521573/article/details/70991850)
+[点击查看详细介绍](http://blog.csdn.net/qq_20521573/article/details/70991850)
