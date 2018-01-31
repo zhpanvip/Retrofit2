@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
@@ -55,8 +59,10 @@ public class IdeaApi {
                 .readTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .connectTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(interceptor)
+                .addInterceptor(new HttpHeaderInterceptor())
                 .addNetworkInterceptor(new HttpCacheInterceptor())
-               // .sslSocketFactory(SslContextFactory.getSSLSocketFactoryForTwoWay())   https认证
+               // .sslSocketFactory(SslContextFactory.getSSLSocketFactoryForTwoWay())   https认证 如果要使用https且为自定义证书 可以去掉这两行注释，并自行配制证书。
+               // .hostnameVerifier(new UnSafeHostnameVerifier())
                 .cache(cache)
                 .build();
 
@@ -69,6 +75,25 @@ public class IdeaApi {
                 .baseUrl(IdeaApiService.API_SERVER_URL)
                 .build();
         service = retrofit.create(IdeaApiService.class);
+    }
+
+
+    //  添加请求头的拦截器
+    private class HttpHeaderInterceptor implements Interceptor {
+
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            //  配置请求头
+            String accessToken = "token";
+            String tokenType = "tokenType";
+            Request request = chain.request().newBuilder()
+                    .header("app_key","appId")
+                    .header("Authorization", tokenType + " " + accessToken)
+                    .header("Content-Type", "application/json")
+                    .addHeader("Connection", "close")
+                    .build();
+            return chain.proceed(request);
+        }
     }
 
     //  创建单例
@@ -84,14 +109,6 @@ public class IdeaApi {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Request request = chain.request();
-            if (!NetworkUtils.isConnected()) {  //没网强制从缓存读取
-                request = request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build();
-                LogUtils.d("Okhttp", "no network");
-            }
-
-
             Response originalResponse = chain.proceed(request);
             if (NetworkUtils.isConnected()) {
                 //有网的时候读接口上的@Headers里的配置，你可以在这里进行统一的设置
@@ -106,6 +123,13 @@ public class IdeaApi {
                         .removeHeader("Pragma")
                         .build();
             }
+        }
+    }
+
+    private class UnSafeHostnameVerifier implements HostnameVerifier {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+            return true;//自行添加判断逻辑，true->Safe，false->unsafe
         }
     }
 }

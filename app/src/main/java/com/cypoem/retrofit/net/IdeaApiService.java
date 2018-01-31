@@ -29,13 +29,14 @@ public interface IdeaApiService {
      */
     int DEFAULT_TIMEOUT = 20000;
 
-  /*  String HOST = "http://gank.io/";
-    String API_SERVER_URL = HOST + "api/data/";*/
+    String HOST = "http://gank.io/";
+    String API_SERVER_URL = HOST + "api/data/";
 
-    String HOST = "https://180.101.147.89";
-    String PORT = ":8743/";
-    String API_SERVER_URL = HOST + PORT+"iocm/app/";
+  //  String HOST = "https://180.101.147.89";
+   // String PORT = ":8743/";
+   /// String API_SERVER_URL = HOST + PORT+"iocm/app/";
     //  String API_SERVER_URL = "https://www.12306.cn/mormhweb/";
+    @Headers("Cache-Control: public, max-age=100")
     @GET("福利/10/1")
     Observable<BasicResponse<List<MeiZi>>> getMezi();
 
