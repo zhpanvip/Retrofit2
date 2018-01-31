@@ -56,6 +56,7 @@ public class IdeaApi {
                 .connectTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(interceptor)
                 .addNetworkInterceptor(new HttpCacheInterceptor())
+               // .sslSocketFactory(SslContextFactory.getSSLSocketFactoryForTwoWay())   https认证
                 .cache(cache)
                 .build();
 

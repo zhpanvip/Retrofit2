@@ -1,6 +1,7 @@
 package com.cypoem.retrofit.net;
 
 import com.cypoem.retrofit.module.BasicResponse;
+import com.cypoem.retrofit.module.LoginResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
 
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -26,12 +29,24 @@ public interface IdeaApiService {
      */
     int DEFAULT_TIMEOUT = 20000;
 
-    String HOST = "http://gank.io/";
-    String API_SERVER_URL = HOST + "api/data/";
+  /*  String HOST = "http://gank.io/";
+    String API_SERVER_URL = HOST + "api/data/";*/
 
-
+    String HOST = "https://180.101.147.89";
+    String PORT = ":8743/";
+    String API_SERVER_URL = HOST + PORT+"iocm/app/";
+    //  String API_SERVER_URL = "https://www.12306.cn/mormhweb/";
     @GET("福利/10/1")
     Observable<BasicResponse<List<MeiZi>>> getMezi();
+
+    /**
+     * 登录 appId secret
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("sec/v1.1.0/login")
+    Observable<LoginResponse> login(@FieldMap Map<String, Object> map);
 
     /**
      * @param page
