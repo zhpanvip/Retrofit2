@@ -1,6 +1,5 @@
 package com.cypoem.retrofit.net;
 
-import android.util.Log;
 
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.NetworkUtils;
@@ -56,13 +55,13 @@ public class IdeaApi {
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .readTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .connectTimeout(IdeaApiService.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(Constants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(Constants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .addInterceptor(interceptor)
                 .addInterceptor(new HttpHeaderInterceptor())
                 .addNetworkInterceptor(new HttpCacheInterceptor())
                // .sslSocketFactory(SslContextFactory.getSSLSocketFactoryForTwoWay())   https认证 如果要使用https且为自定义证书 可以去掉这两行注释，并自行配制证书。
-               // .hostnameVerifier(new UnSafeHostnameVerifier())
+               // .hostnameVerifier(new SafeHostnameVerifier())
                 .cache(cache)
                 .build();
 
@@ -72,7 +71,7 @@ public class IdeaApi {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .baseUrl(IdeaApiService.API_SERVER_URL)
+                .baseUrl(Constants.API_SERVER_URL)
                 .build();
         service = retrofit.create(IdeaApiService.class);
     }
@@ -126,10 +125,13 @@ public class IdeaApi {
         }
     }
 
-    private class UnSafeHostnameVerifier implements HostnameVerifier {
+    private class SafeHostnameVerifier implements HostnameVerifier {
         @Override
         public boolean verify(String hostname, SSLSession session) {
-            return true;//自行添加判断逻辑，true->Safe，false->unsafe
+            if (Constants.IP.equals(hostname)) {//校验hostname是否正确，如果正确则建立连接
+                return true;
+            }
+            return false;
         }
     }
 }
