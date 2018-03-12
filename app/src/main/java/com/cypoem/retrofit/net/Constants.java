@@ -9,7 +9,7 @@ public interface Constants {
      * 网络请求超时时间毫秒
      */
     int DEFAULT_TIMEOUT = 20000;
-    String IP="180.101.147.89";
+    String IP="202.108.22.5 ";
     String HOST = "http://gank.io/";
     String API_SERVER_URL = HOST + "api/data/";
     //  String HOST = "https://180.101.147.89";

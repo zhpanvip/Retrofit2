@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -28,20 +29,18 @@ public class SslContextFactory {
 
     /**
      * 单项认证
-     *
-     * @param certificates
-     * @return
      */
     public static SSLSocketFactory getSSLSocketFactoryForOneWay(InputStream... certificates) {
         try {
-            //  12306证书
-            InputStream certificate12306 = Utils.getContext().getResources().openRawResource(R.raw.srca);
+            //  12306证书流
+           // InputStream certificate12306 = Utils.getContext().getResources().openRawResource(R.raw.srca);
             CertificateFactory certificateFactory = CertificateFactory.getInstance(CLIENT_TRUST_MANAGER, CLIENT_TRUST_PROVIDER);
             KeyStore keyStore = KeyStore.getInstance(CLIENT_TRUST_KEYSTORE);
             keyStore.load(null);
             int index = 0;
             for (InputStream certificate : certificates) {
                 String certificateAlias = Integer.toString(index++);
+                Certificate certificate1 = certificateFactory.generateCertificate(certificate);
                 keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
                 try {
                     if (certificate != null)
