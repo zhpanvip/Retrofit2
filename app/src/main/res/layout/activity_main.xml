@@ -12,7 +12,7 @@
     tools:context="com.cypoem.retrofit.activity.MainActivity">
 
     <Button
-        android:id="@+id/btn"
+        android:id="@+id/btn_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -26,6 +26,14 @@
         android:layout_marginTop="10dp"
         android:onClick="download"
         android:text="下载文件" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:onClick="cancelDownload"
+        android:text="取消下载文件" />
 
     <ProgressBar
         android:id="@+id/progressBar"

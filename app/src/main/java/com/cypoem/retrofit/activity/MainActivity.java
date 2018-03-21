@@ -16,7 +16,7 @@ import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
 import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.IdeaApi;
-import com.cypoem.retrofit.net.download.DownListener;
+import com.cypoem.retrofit.net.download.DownloadListener;
 import com.cypoem.retrofit.net.download.DownloadUtils;
 import com.cypoem.retrofit.utils.LogUtils;
 import com.cypoem.retrofit.utils.ToastUtils;
@@ -36,7 +36,9 @@ public class MainActivity extends BaseActivity {
     private Button btn;
     ProgressBar progressBar;
     TextView mTvPercent;
-    private static final String url="http://www.oitsme.com/download/oitsme.apk";
+    private static final String url = "http://www.oitsme.com/download/oitsme.apk";
+    private DownloadUtils downloadUtils;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main;
@@ -48,9 +50,10 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        progressBar= (ProgressBar) findViewById(R.id.progressBar);
-        mTvPercent=(TextView)findViewById(R.id.tv_percent);
-        btn = (Button) findViewById(R.id.btn);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mTvPercent = (TextView) findViewById(R.id.tv_percent);
+        btn = (Button) findViewById(R.id.btn_download);
+        downloadUtils = new DownloadUtils();
     }
 
 
@@ -64,39 +67,48 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onSuccess(BasicResponse<List<MeiZi>> response) {
                         List<MeiZi> results = response.getResults();
-                        showToast("请求成功，妹子个数为"+results.size());
+                        showToast("请求成功，妹子个数为" + results.size());
                     }
                 });
     }
 
+    public void cancelDownload(View view) {
+        if (downloadUtils != null) {
+            downloadUtils.cancelDownload();
+            btn.setClickable(true);
+        }
+    }
+
     public void download(View view) {
-        new DownloadUtils(this)
-                .download(url, new DownListener() {
-                    @Override
-                    public void onProgress(int progress) {
-                        LogUtils.e("--------下载进度：" + progress);
-                        Log.e("onProgress", "是否在主线程中运行:"+String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-                        progressBar.setProgress(progress);
-                        mTvPercent.setText(String.valueOf(progress)+"%");
-                    }
+        btn.setClickable(false);
+        downloadUtils.download(url, new DownloadListener() {
+            @Override
+            public void onProgress(int progress) {
+                LogUtils.e("--------下载进度：" + progress);
+                Log.e("onProgress", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
+                progressBar.setProgress(progress);
+                mTvPercent.setText(String.valueOf(progress) + "%");
+            }
 
-                    @Override
-                    public void onSuccess(ResponseBody responseBody) {  //  运行在子线程
-                        saveFile(responseBody);
-                        Log.e("onSuccess", "是否在主线程中运行:"+String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-                    }
+            @Override
+            public void onSuccess(ResponseBody responseBody) {  //  运行在子线程
+                saveFile(responseBody);
+                Log.e("onSuccess", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
+            }
 
-                    @Override
-                    public void onFail(String message) {
-                        ToastUtils.show("文件下载失败,失败原因："+message);
-                        Log.e("onFail", "是否在主线程中运行:"+String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-                    }
+            @Override
+            public void onFail(String message) {
+                btn.setClickable(true);
+                ToastUtils.show("文件下载失败,失败原因：" + message);
+                Log.e("onFail", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
+            }
 
-                    @Override
-                    public void onComplete() {  //  运行在主线程中
-                        ToastUtils.show("文件下载成功");
-                    }
-                });
+            @Override
+            public void onComplete() {  //  运行在主线程中
+                ToastUtils.show("文件下载成功");
+                btn.setClickable(true);
+            }
+        });
     }
 
     private void saveFile(ResponseBody body) {
