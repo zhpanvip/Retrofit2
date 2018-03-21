@@ -1,4 +1,4 @@
-package com.cypoem.retrofit.net;
+package com.cypoem.retrofit.net.https;
 
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.utils.Utils;
