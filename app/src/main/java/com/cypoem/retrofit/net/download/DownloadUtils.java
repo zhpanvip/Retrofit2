@@ -1,6 +1,7 @@
 package com.cypoem.retrofit.net.download;
 
 import com.cypoem.retrofit.net.CommonNetService;
+import com.cypoem.retrofit.net.Constants;
 import com.cypoem.retrofit.net.IdeaApiService;
 
 import io.reactivex.Observer;
@@ -51,7 +52,7 @@ public class DownloadUtils {
     private IdeaApiService getApiService() {
         OkHttpClient.Builder httpClientBuilder = CommonNetService.getOkHttpClientBuilder();
         ProgressHelper.addProgress(httpClientBuilder);
-        IdeaApiService ideaApiService = CommonNetService.getRetrofitBuilder()
+        IdeaApiService ideaApiService = CommonNetService.getRetrofitBuilder(Constants.API_SERVER_URL)
                 .client(httpClientBuilder.build())
                 .build()
                 .create(IdeaApiService.class);

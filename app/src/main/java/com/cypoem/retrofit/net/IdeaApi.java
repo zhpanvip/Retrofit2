@@ -11,7 +11,7 @@ public class IdeaApi {
     private IdeaApiService service;
 
     private IdeaApi() {
-        Retrofit retrofit = CommonNetService.getRetrofitBuilder().build();
+        Retrofit retrofit = CommonNetService.getRetrofitBuilder(Constants.API_SERVER_URL).build();
         service = retrofit.create(IdeaApiService.class);
     }
 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
+import com.cypoem.retrofit.net.Constants;
 import com.cypoem.retrofit.net.DefaultObserver;
 import com.cypoem.retrofit.net.IdeaApi;
 import com.cypoem.retrofit.net.download.DownloadListener;
@@ -36,7 +37,6 @@ public class MainActivity extends BaseActivity {
     private Button btn;
     ProgressBar progressBar;
     TextView mTvPercent;
-    private static final String url = "http://www.oitsme.com/download/oitsme.apk";
     private DownloadUtils downloadUtils;
 
     @Override
@@ -81,7 +81,7 @@ public class MainActivity extends BaseActivity {
 
     public void download(View view) {
         btn.setClickable(false);
-        downloadUtils.download(url, new DownloadListener() {
+        downloadUtils.download(Constants.DOWNLOAD_URL, new DownloadListener() {
             @Override
             public void onProgress(int progress) {
                 LogUtils.e("--------下载进度：" + progress);
