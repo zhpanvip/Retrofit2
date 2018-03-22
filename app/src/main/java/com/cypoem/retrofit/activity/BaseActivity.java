@@ -3,8 +3,9 @@ package com.cypoem.retrofit.activity;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 
-import com.cypoem.retrofit.utils.ToastUtils;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import lotcom.zhpan.idea.utils.ToastUtils;
 
 public abstract class BaseActivity extends RxAppCompatActivity {
 

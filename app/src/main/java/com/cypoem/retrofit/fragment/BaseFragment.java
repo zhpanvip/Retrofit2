@@ -7,8 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cypoem.retrofit.utils.ToastUtils;
 import com.trello.rxlifecycle2.components.RxFragment;
+
+import lotcom.zhpan.idea.utils.ToastUtils;
 
 /**
  * Created by zhpan on 2017/4/22.

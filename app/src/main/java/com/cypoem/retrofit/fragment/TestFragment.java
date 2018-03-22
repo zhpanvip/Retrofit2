@@ -3,15 +3,16 @@ package com.cypoem.retrofit.fragment;
 import android.os.Bundle;
 
 import com.cypoem.retrofit.R;
-import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
-import com.cypoem.retrofit.net.DefaultObserver;
-import com.cypoem.retrofit.net.IdeaApi;
+import com.cypoem.retrofit.net.IdeaApiService;
 
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import lotcom.zhpan.idea.net.BasicResponse;
+import lotcom.zhpan.idea.net.DefaultObserver;
+import lotcom.zhpan.idea.net.IdeaApi;
 
 /**
  * Created by zhpan on 2017/9/30.
@@ -32,7 +33,7 @@ public class TestFragment extends BaseFragment {
 
     public void getData() {
 
-        IdeaApi.getApiService()
+       /* IdeaApi.getApiService(IdeaApiService.class)
                 .getMezi()
                 .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
                 .subscribeOn(Schedulers.io())
@@ -43,6 +44,6 @@ public class TestFragment extends BaseFragment {
                         List<MeiZi> results = response.getResults();
                         showToast("请求成功，妹子个数为"+results.size());
                     }
-                });
+                });*/
     }
 }

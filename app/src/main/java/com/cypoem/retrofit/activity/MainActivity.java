@@ -12,15 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cypoem.retrofit.R;
-import com.cypoem.retrofit.module.BasicResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
-import com.cypoem.retrofit.net.Constants;
-import com.cypoem.retrofit.net.DefaultObserver;
-import com.cypoem.retrofit.net.IdeaApi;
-import com.cypoem.retrofit.net.download.DownloadListener;
-import com.cypoem.retrofit.net.download.DownloadUtils;
-import com.cypoem.retrofit.utils.LogUtils;
-import com.cypoem.retrofit.utils.ToastUtils;
+import com.cypoem.retrofit.net.RetrofitHelper;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -31,6 +24,13 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import lotcom.zhpan.idea.net.BasicResponse;
+import lotcom.zhpan.idea.net.Constants;
+import lotcom.zhpan.idea.net.DefaultObserver;
+import lotcom.zhpan.idea.net.download.DownloadListener;
+import lotcom.zhpan.idea.net.download.DownloadUtils;
+import lotcom.zhpan.idea.utils.LogUtils;
+import lotcom.zhpan.idea.utils.ToastUtils;
 import okhttp3.ResponseBody;
 
 public class MainActivity extends BaseActivity {
@@ -56,9 +56,8 @@ public class MainActivity extends BaseActivity {
         downloadUtils = new DownloadUtils();
     }
 
-
     public void getData(View view) {
-        IdeaApi.getApiService()
+        RetrofitHelper.getApiService()
                 .getMezi()
                 .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
                 .subscribeOn(Schedulers.io())
