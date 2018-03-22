@@ -84,7 +84,7 @@ public class DownloadUtils {
 
             @Override
             public void onNext(ResponseBody responseBody) {
-                mDownloadListener.onSuccess(responseBody);
+                mDownloadListener.onComplete();
             }
 
             @Override
