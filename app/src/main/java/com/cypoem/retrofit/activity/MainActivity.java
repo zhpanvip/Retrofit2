@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cypoem.retrofit.ProgressUtils;
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.bean.MeiZi;
 import com.cypoem.retrofit.net.RetrofitHelper;
@@ -60,9 +61,10 @@ public class MainActivity extends BaseActivity {
         RetrofitHelper.getApiService()
                 .getMezi()
                 .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
+                .compose(ProgressUtils.<BasicResponse<List<MeiZi>>>applyProgressBar(this))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>(this) {
+                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>() {
                     @Override
                     public void onSuccess(BasicResponse<List<MeiZi>> response) {
                         List<MeiZi> results = response.getResults();

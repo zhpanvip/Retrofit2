@@ -85,17 +85,19 @@ public class DownloadUtils {
 
             @Override
             public void onNext(ResponseBody responseBody) {
-                mDownloadListener.onComplete();
+               // mDownloadListener.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
                 mDownloadListener.onFail(e.getMessage());
+                mDisposables.clear();
             }
 
             @Override
             public void onComplete() {
                 mDownloadListener.onComplete();
+                mDisposables.clear();
             }
         };
     }

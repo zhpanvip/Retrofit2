@@ -31,24 +31,6 @@ import static lotcom.zhpan.idea.net.DefaultObserver.ExceptionReason.UNKNOWN_ERRO
  */
 
 public abstract class DefaultObserver<T extends BasicResponse> implements Observer<T> {
-    private Activity activity;
-    //  Activity 是否在执行onStop()时取消订阅
-    private boolean isAddInStop = false;
-   // private CommonDialogUtils dialogUtils;
-    public DefaultObserver(Activity activity) {
-        this.activity = activity;
-      //  dialogUtils=new CommonDialogUtils();
-      //  dialogUtils.showProgress(activity);
-    }
-
-    public DefaultObserver(Activity activity, boolean isShowLoading) {
-        this.activity = activity;
-      //  dialogUtils=new CommonDialogUtils();
-        if (isShowLoading) {
-           // dialogUtils.showProgress(activity,"Loading...");
-        }
-    }
-
     @Override
     public void onSubscribe(Disposable d) {
 
@@ -56,7 +38,6 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
 
     @Override
     public void onNext(T response) {
-        dismissProgress();
         if (!response.isError()) {
             onSuccess(response);
         } else {
@@ -69,16 +50,9 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
         }*/
     }
 
-    private void dismissProgress(){
-//        if(dialogUtils!=null){
-//            dialogUtils.dismissProgress();
-//        }
-    }
-
     @Override
     public void onError(Throwable e) {
         LogUtils.e("Retrofit", e.getMessage());
-        dismissProgress();
         if (e instanceof HttpException) {     //   HTTP错误
             onException(ExceptionReason.BAD_NETWORK);
         } else if (e instanceof ConnectException
