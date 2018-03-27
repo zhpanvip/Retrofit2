@@ -7,16 +7,16 @@ Rxjava2+Retrofit2封装
 使用方法：
 Get/Post
 ```
-IdeaApi.getApiService()
+RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
+                .compose(this.<List<MeiZi>>bindToLifecycle())
+                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>(this) {
+                .subscribe(new DefaultObserver<List<MeiZi>>() {
                     @Override
-                    public void onSuccess(BasicResponse<List<MeiZi>> response) {
-                        List<MeiZi> results = response.getResults();
-                        showToast("请求成功，妹子个数为"+results.size());
+                    public void onSuccess(List<MeiZi> response) {
+                        showToast("请求成功，妹子个数为" + response.size());
                     }
                 });
 ```
