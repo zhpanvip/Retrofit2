@@ -1,4 +1,4 @@
-package com.zhpan.idea.net;
+package com.zhpan.idea.net.common;
 
 
 import java.util.Map;
@@ -21,7 +21,7 @@ import retrofit2.http.Url;
  * Created by dell on 2017/4/1.
  */
 
-public interface BaseService {
+public interface CommonService {
     @Streaming
     @GET//("download.do")
     Observable<ResponseBody> download(@Url String url);//直接使用网址下载

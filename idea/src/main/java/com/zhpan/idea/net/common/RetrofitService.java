@@ -1,8 +1,9 @@
-package com.zhpan.idea.net;
+package com.zhpan.idea.net.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.zhpan.idea.net.converter.GsonConverterFactory;
 import com.zhpan.idea.net.interceptor.HttpCacheInterceptor;
 import com.zhpan.idea.net.interceptor.HttpHeaderInterceptor;
 import com.zhpan.idea.utils.LogUtils;
@@ -17,13 +18,12 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by zhpan on 2018/3/21.
  */
 
-public class CommonNetService {
+public class RetrofitService {
     public static OkHttpClient.Builder getOkHttpClientBuilder() {
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
@@ -55,7 +55,7 @@ public class CommonNetService {
 
     public static Retrofit.Builder getRetrofitBuilder(String baseUrl) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
-        OkHttpClient okHttpClient = CommonNetService.getOkHttpClientBuilder().build();
+        OkHttpClient okHttpClient = RetrofitService.getOkHttpClientBuilder().build();
         return new Retrofit.Builder()
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))

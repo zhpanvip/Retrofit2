@@ -1,4 +1,4 @@
-package com.zhpan.idea.net;
+package com.zhpan.idea.net.common;
 
 import retrofit2.Retrofit;
 
@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 
 public class IdeaApi {
     public static <T> T getApiService(Class<T> cls,String baseUrl) {
-        Retrofit retrofit = CommonNetService.getRetrofitBuilder(baseUrl).build();
+        Retrofit retrofit = RetrofitService.getRetrofitBuilder(baseUrl).build();
         return retrofit.create(cls);
     }
 }

@@ -1,11 +1,11 @@
-package com.zhpan.idea.net;
+package com.zhpan.idea.net.common;
 
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.zhpan.idea.R;
+import com.zhpan.idea.net.exception.ServerResponseException;
 import com.zhpan.idea.utils.LogUtils;
 import com.zhpan.idea.utils.ToastUtils;
 
@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
  * Created by zhpan on 2017/4/18.
  */
 
-public abstract class DefaultObserver<T extends BasicResponse> implements Observer<T> {
+public abstract class DefaultObserver<T> implements Observer<T> {
     @Override
     public void onSubscribe(Disposable d) {
 
@@ -32,16 +32,7 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
 
     @Override
     public void onNext(T response) {
-        if (!response.isError()) {
-            onSuccess(response);
-        } else {
-            onFail(response);
-        }
-        /*if (response.getCode() == 200) {
-            onSuccess(response);
-        } else {
-            onFail(response);
-        }*/
+        onSuccess(response);
     }
 
     @Override
@@ -58,6 +49,8 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
                 || e instanceof JSONException
                 || e instanceof ParseException) {   //  解析错误
             onException(ExceptionReason.PARSE_ERROR);
+        }else if(e instanceof ServerResponseException){
+            onFail(e.getMessage());
         } else {
             onException(ExceptionReason.UNKNOWN_ERROR);
         }
@@ -77,15 +70,12 @@ public abstract class DefaultObserver<T extends BasicResponse> implements Observ
     /**
      * 服务器返回数据，但响应码不为200
      *
-     * @param response 服务器返回的数据
      */
-    public void onFail(T response) {
-        String message = response.getMessage();
-        if (TextUtils.isEmpty(message)) {
-            ToastUtils.show(R.string.response_return_error);
-        } else {
-            ToastUtils.show(message);
-        }
+    /**
+     * 服务器返回数据，但响应码不为1000
+     */
+    public void onFail(String message) {
+        ToastUtils.show(message);
     }
 
     /**

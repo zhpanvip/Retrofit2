@@ -15,9 +15,9 @@ import com.cypoem.retrofit.ProgressUtils;
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.bean.MeiZi;
 import com.cypoem.retrofit.net.RetrofitHelper;
-import com.zhpan.idea.net.BasicResponse;
-import com.zhpan.idea.net.Constants;
-import com.zhpan.idea.net.DefaultObserver;
+import com.zhpan.idea.net.common.BasicResponse;
+import com.zhpan.idea.net.common.Constants;
+import com.zhpan.idea.net.common.DefaultObserver;
 import com.zhpan.idea.net.download.DownloadListener;
 import com.zhpan.idea.net.download.DownloadUtils;
 import com.zhpan.idea.utils.LogUtils;
@@ -61,15 +61,14 @@ public class MainActivity extends BaseActivity {
     public void getData(View view) {
         RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
-                .compose(ProgressUtils.<BasicResponse<List<MeiZi>>>applyProgressBar(this))
+                .compose(this.<List<MeiZi>>bindToLifecycle())
+                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>() {
+                .subscribe(new DefaultObserver<List<MeiZi>>() {
                     @Override
-                    public void onSuccess(BasicResponse<List<MeiZi>> response) {
-                        List<MeiZi> results = response.getResults();
-                        showToast("请求成功，妹子个数为" + results.size());
+                    public void onSuccess(List<MeiZi> response) {
+                        showToast("请求成功，妹子个数为" + response.size());
                     }
                 });
     }

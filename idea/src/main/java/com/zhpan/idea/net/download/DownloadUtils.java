@@ -1,9 +1,9 @@
 package com.zhpan.idea.net.download;
 
 
-import com.zhpan.idea.net.BaseService;
-import com.zhpan.idea.net.CommonNetService;
-import com.zhpan.idea.net.Constants;
+import com.zhpan.idea.net.common.CommonService;
+import com.zhpan.idea.net.common.RetrofitService;
+import com.zhpan.idea.net.common.Constants;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,13 +50,13 @@ public class DownloadUtils {
         mDisposables.clear();
     }
 
-    private BaseService getApiService() {
-        OkHttpClient.Builder httpClientBuilder = CommonNetService.getOkHttpClientBuilder();
+    private CommonService getApiService() {
+        OkHttpClient.Builder httpClientBuilder = RetrofitService.getOkHttpClientBuilder();
         ProgressHelper.addProgress(httpClientBuilder);
-        BaseService ideaApiService = CommonNetService.getRetrofitBuilder(Constants.API_SERVER_URL)
+        CommonService ideaApiService = RetrofitService.getRetrofitBuilder(Constants.API_SERVER_URL)
                 .client(httpClientBuilder.build())
                 .build()
-                .create(BaseService.class);
+                .create(CommonService.class);
         ProgressHelper.setProgressHandler(new DownloadProgressHandler() {
             @Override
             protected void onProgress(long bytesRead, long contentLength, boolean done) {

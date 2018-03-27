@@ -2,7 +2,7 @@ package com.cypoem.retrofit.net;
 
 import com.cypoem.retrofit.module.LoginResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
-import com.zhpan.idea.net.BasicResponse;
+import com.zhpan.idea.net.common.BasicResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public interface IdeaApiService {
 
     @Headers("Cache-Control: public, max-age=100")
     @GET("福利/10/1")
-    Observable<BasicResponse<List<MeiZi>>> getMezi();
+    Observable<List<MeiZi>> getMezi();
 
     /**
      * 登录 appId secret

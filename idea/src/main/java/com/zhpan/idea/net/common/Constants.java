@@ -1,4 +1,4 @@
-package com.zhpan.idea.net;
+package com.zhpan.idea.net.common;
 
 /**
  * Created by zhpan on 2018/2/1.

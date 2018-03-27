@@ -1,7 +1,7 @@
 package com.zhpan.idea.net.https;
 
 
-import com.zhpan.idea.net.Constants;
+import com.zhpan.idea.net.common.Constants;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
