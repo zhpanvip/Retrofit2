@@ -2,13 +2,12 @@ package com.cypoem.retrofit.net;
 
 import com.cypoem.retrofit.module.LoginResponse;
 import com.cypoem.retrofit.module.bean.MeiZi;
+import com.zhpan.idea.net.BasicResponse;
 
 import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
-import lotcom.zhpan.idea.net.BaseService;
-import lotcom.zhpan.idea.net.BasicResponse;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.FieldMap;

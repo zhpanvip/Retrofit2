@@ -4,8 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+import com.zhpan.idea.utils.ToastUtils;
 
-import lotcom.zhpan.idea.utils.ToastUtils;
 
 public abstract class BaseActivity extends RxAppCompatActivity {
 

@@ -3,7 +3,7 @@ package com.cypoem.retrofit;
 import android.app.Application;
 import android.content.Context;
 
-import lotcom.zhpan.idea.utils.Utils;
+import com.zhpan.idea.utils.Utils;
 
 
 /**

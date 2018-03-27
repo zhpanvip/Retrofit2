@@ -1,7 +1,8 @@
 package com.cypoem.retrofit.net;
 
-import lotcom.zhpan.idea.net.Constants;
-import lotcom.zhpan.idea.net.IdeaApi;
+
+import com.zhpan.idea.net.Constants;
+import com.zhpan.idea.net.IdeaApi;
 
 public class RetrofitHelper {
     private static IdeaApiService mIdeaApiService;
@@ -10,6 +11,6 @@ public class RetrofitHelper {
         return mIdeaApiService;
     }
     static {
-       mIdeaApiService= IdeaApi.getApiService(IdeaApiService.class,Constants.API_SERVER_URL);
+       mIdeaApiService= IdeaApi.getApiService(IdeaApiService.class, Constants.API_SERVER_URL);
     }
 }
