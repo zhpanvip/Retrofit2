@@ -5,22 +5,66 @@ Rxjava2+Retrofit2封装
 
 
 使用方法：
-
+Get/Post
 ```
-IdeaApi.getApiService()
+RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
+                .compose(this.<List<MeiZi>>bindToLifecycle())
+                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>(this) {
+                .subscribe(new DefaultObserver<List<MeiZi>>() {
                     @Override
-                    public void onSuccess(BasicResponse<List<MeiZi>> response) {
-                        List<MeiZi> results = response.getResults();
-                        showToast("请求成功，妹子个数为"+results.size());
+                    public void onSuccess(List<MeiZi> response) {
+                        showToast("请求成功，妹子个数为" + response.size());
                     }
                 });
 ```
-文件下载
+
+上传文件
+```
+ //  上传文件
+    public void uploadFile(View view) {
+        /********************************方法一**********************************/
+        String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String filePath = fileStoreDir+"/test/test.txt";
+        FileUtils.createOrExistsFile(filePath);
+        //文件路径
+        File file = new File(filePath);
+        RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("phone", "12345678901")
+                .addFormDataPart("password", "123123")
+                .addFormDataPart("uploadFile", file.getName(), fileBody);
+        List<MultipartBody.Part> parts = builder.build().parts();
+
+        /********************************方法二**********************************/
+        /*//  图片参数
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile);
+        //  手机号参数
+        RequestBody phoneBody = RequestBody.create(MediaType.parse("multipart/form-data"), phone);
+        //  密码参数
+        RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), password);*/
+
+        RetrofitHelper.getApiService()
+                .uploadFiles(parts)
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BasicResponse>bindToLifecycle())
+                .compose(ProgressUtils.<BasicResponse>applyProgressBar(this,"上传文件..."))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DefaultObserver<BasicResponse>() {
+                    @Override
+                    public void onSuccess(BasicResponse response) {
+                        ToastUtils.show("文件上传成功");
+                    }
+                });
+    }
+```
+
+
+下载
 ```
 DownloadUtils downloadUtils = new DownloadUtils();
 public void download(View view) {
@@ -55,7 +99,7 @@ public void download(View view) {
         });
     }
 ```
-取消下载
+取消文件下载
 ```
  public void cancelDownload(View view) {
         if (downloadUtils != null) {
