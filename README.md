@@ -1,11 +1,11 @@
 # Retrofit2
-Rxjava2+Retrofit2封装
+Rxjava2+Retrofit2二次封装
 
-关于token处理请切换到token分支
-
+**关于token处理请切换到token分支**
 
 使用方法：
-Get/Post
+
+Get/Post请求
 ```
 RetrofitHelper.getApiService()
                 .getMezi()
