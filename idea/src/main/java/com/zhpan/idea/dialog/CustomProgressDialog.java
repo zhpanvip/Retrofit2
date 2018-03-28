@@ -1,4 +1,4 @@
-package com.cypoem.retrofit;
+package com.zhpan.idea.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.zhpan.idea.R;
+
 
 /**
  * Created by zhpan on 2017/4/13.

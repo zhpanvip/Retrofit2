@@ -18,10 +18,7 @@ package com.zhpan.idea.net.converter;
 
 import com.google.gson.TypeAdapter;
 import com.zhpan.idea.net.common.BasicResponse;
-import com.zhpan.idea.net.common.ErrorCode;
 import com.zhpan.idea.net.exception.ServerResponseException;
-import com.zhpan.idea.net.exception.TokenInvalidException;
-import com.zhpan.idea.net.exception.TokenNotExistException;
 
 import java.io.IOException;
 

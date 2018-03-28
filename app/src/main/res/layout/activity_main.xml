@@ -12,12 +12,27 @@
     tools:context="com.cypoem.retrofit.activity.MainActivity">
 
     <Button
-        android:id="@+id/btn_request"
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="login"
+        android:text="登录" />
+
+    <Button
+        android:id="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:onClick="getData"
         android:text="点击获取网络数据" />
+
+    <Button
+        android:id="@+id/btn_upload"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:onClick="uploadFile"
+        android:text="上传文件文件" />
 
     <Button
         android:id="@+id/btn_download"

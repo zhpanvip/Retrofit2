@@ -1,9 +1,9 @@
-package com.cypoem.retrofit;
+package com.zhpan.idea.net.common;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
-import android.view.KeyEvent;
+
+import com.zhpan.idea.dialog.DialogUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -20,16 +20,10 @@ import io.reactivex.functions.Consumer;
 
 public class ProgressUtils {
     public static <T> ObservableTransformer<T, T> applyProgressBar(
-            @NonNull final Activity activity) {
-        Activity context;
+            @NonNull final Activity activity, String msg) {
         final WeakReference<Activity> activityWeakReference = new WeakReference<>(activity);
-
-        final CustomProgressDialog dialog = getDialog(activityWeakReference);
-
-        if ((context = activityWeakReference.get()) != null
-                && !context.isFinishing()) {
-             dialog.show();
-        }
+        final DialogUtils dialogUtils = new DialogUtils();
+        dialogUtils.showProgress(activityWeakReference.get());
         return new ObservableTransformer<T, T>() {
             @Override
             public ObservableSource<T> apply(Observable<T> upstream) {
@@ -44,16 +38,16 @@ public class ProgressUtils {
                         Activity context;
                         if ((context = activityWeakReference.get()) != null
                                 && !context.isFinishing()) {
-                            dialog.dismiss();
+                            dialogUtils.dismissProgress();
                         }
                     }
                 }).doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-                       /* Activity context;
+                        /*Activity context;
                         if ((context = activityWeakReference.get()) != null
                                 && !context.isFinishing()) {
-                           // dialog.dismiss();
+                            dialogUtils.dismissProgress();
                         }*/
                     }
                 });
@@ -61,29 +55,8 @@ public class ProgressUtils {
         };
     }
 
-    private static CustomProgressDialog getDialog(final WeakReference<Activity> activityWeakReference){
-        final CustomProgressDialog dialog= new CustomProgressDialog.Builder(activityWeakReference.get())
-                .setTheme(R.style.ProgressDialogStyle)
-                .build();
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                Activity context;
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    try {
-                        if ((context = activityWeakReference.get()) != null
-                                && !context.isFinishing()) {
-                            dialog.dismiss();
-                        }
-                    } catch (Throwable e) {
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        return dialog;
+    public static <T> ObservableTransformer<T, T> applyProgressBar(
+            @NonNull final Activity activity) {
+        return applyProgressBar(activity, "");
     }
-
 }

@@ -11,16 +11,20 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.cypoem.retrofit.ProgressUtils;
 import com.cypoem.retrofit.R;
-import com.cypoem.retrofit.module.bean.MeiZi;
+import com.cypoem.retrofit.module.reponse.LoginResponse;
+import com.cypoem.retrofit.module.reponse.MeiZi;
+import com.cypoem.retrofit.module.request.LoginRequest;
 import com.cypoem.retrofit.net.RetrofitHelper;
 import com.zhpan.idea.net.common.BasicResponse;
 import com.zhpan.idea.net.common.Constants;
 import com.zhpan.idea.net.common.DefaultObserver;
+import com.zhpan.idea.net.common.ProgressUtils;
 import com.zhpan.idea.net.download.DownloadListener;
 import com.zhpan.idea.net.download.DownloadUtils;
+import com.zhpan.idea.utils.FileUtils;
 import com.zhpan.idea.utils.LogUtils;
+import com.zhpan.idea.utils.SharedPreferencesHelper;
 import com.zhpan.idea.utils.ToastUtils;
 
 import java.io.BufferedInputStream;
@@ -32,6 +36,9 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 
@@ -58,6 +65,38 @@ public class MainActivity extends BaseActivity {
         downloadUtils = new DownloadUtils();
     }
 
+    /**
+     * Post请求
+     */
+    public void login(View view) {
+        LoginRequest loginRequest = new LoginRequest(this);
+        loginRequest.setUserId("123456");
+        loginRequest.setPassword("123123");
+        RetrofitHelper.getApiService()
+                .login(loginRequest)
+                .subscribeOn(Schedulers.io())
+                .compose(this.<LoginResponse>bindToLifecycle())
+                .compose(ProgressUtils.<LoginResponse>applyProgressBar(this))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DefaultObserver<LoginResponse>() {
+                    @Override
+                    public void onSuccess(LoginResponse response) {
+                       // LoginResponse results = response.getResults();
+                        ToastUtils.show("登录成功！获取到token" + response.getToken() + ",可以存储到本地了");
+                        /**
+                         * 可以将这些数据存储到User中，User存储到本地数据库
+                         */
+                        SharedPreferencesHelper.put(MainActivity.this, "token", response.getToken());
+                        SharedPreferencesHelper.put(MainActivity.this, "refresh_token", response.getRefresh_token());
+                        SharedPreferencesHelper.put(MainActivity.this, "refresh_secret", response.getRefresh_secret());
+                    }
+                });
+    }
+
+    /**
+     * Get请求
+     * @param view
+     */
     public void getData(View view) {
         RetrofitHelper.getApiService()
                 .getMezi()
@@ -69,6 +108,47 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onSuccess(List<MeiZi> response) {
                         showToast("请求成功，妹子个数为" + response.size());
+                    }
+                });
+    }
+
+    /**
+     * 上传文件
+     */
+    public void uploadFile(View view) {
+        /********************************方法一**********************************/
+        String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String filePath = fileStoreDir + "/test/test.txt";
+        FileUtils.createOrExistsFile(filePath);
+        //文件路径
+        File file = new File(filePath);
+        RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("phone", "12345678901")
+                .addFormDataPart("password", "123123")
+                .addFormDataPart("uploadFile", file.getName(), fileBody);
+        List<MultipartBody.Part> parts = builder.build().parts();
+
+        /********************************方法二**********************************/
+        /*//  图片参数
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile);
+        //  手机号参数
+        RequestBody phoneBody = RequestBody.create(MediaType.parse("multipart/form-data"), phone);
+        //  密码参数
+        RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), password);*/
+
+        RetrofitHelper.getApiService()
+                .uploadFiles(parts)
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BasicResponse>bindToLifecycle())
+                .compose(ProgressUtils.<BasicResponse>applyProgressBar(this, "上传文件..."))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DefaultObserver<BasicResponse>() {
+                    @Override
+                    public void onSuccess(BasicResponse response) {
+                        ToastUtils.show("文件上传成功");
                     }
                 });
     }

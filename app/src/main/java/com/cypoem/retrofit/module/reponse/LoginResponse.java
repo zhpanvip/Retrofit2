@@ -1,4 +1,4 @@
-package com.cypoem.retrofit.module;
+package com.cypoem.retrofit.module.reponse;
 
 
 import com.zhpan.idea.net.common.BasicResponse;
