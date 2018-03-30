@@ -33,6 +33,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
     @Override
     public void onNext(T response) {
         onSuccess(response);
+        onFinish();
     }
 
     @Override
@@ -54,6 +55,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
         } else {
             onException(ExceptionReason.UNKNOWN_ERROR);
         }
+        onFinish();
     }
 
     @Override
@@ -77,6 +79,8 @@ public abstract class DefaultObserver<T> implements Observer<T> {
     public void onFail(String message) {
         ToastUtils.show(message);
     }
+
+    public void onFinish(){}
 
     /**
      * 请求异常

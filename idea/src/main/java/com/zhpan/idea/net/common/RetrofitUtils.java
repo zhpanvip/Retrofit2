@@ -23,7 +23,7 @@ import retrofit2.Retrofit;
  * Created by zhpan on 2018/3/21.
  */
 
-public class RetrofitService {
+public class RetrofitUtils {
     public static OkHttpClient.Builder getOkHttpClientBuilder() {
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
@@ -55,7 +55,7 @@ public class RetrofitService {
 
     public static Retrofit.Builder getRetrofitBuilder(String baseUrl) {
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").serializeNulls().create();
-        OkHttpClient okHttpClient = RetrofitService.getOkHttpClientBuilder().build();
+        OkHttpClient okHttpClient = RetrofitUtils.getOkHttpClientBuilder().build();
         return new Retrofit.Builder()
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))

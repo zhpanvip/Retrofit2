@@ -37,13 +37,20 @@ public interface IdeaApiService {
 
     /**
      * 登录 appId secret
-     *
+     * 使用实体类作为参数
      * @return
      */
-    //@FormUrlEncoded
     @POST("sec/v1.1.0/login")
-    // Observable<LoginResponse> login(@FieldMap Map<String, Object> map);
     Observable<LoginResponse> login(@Body LoginRequest request);
+
+    /**
+     * 使用map作为参数
+     * @param map
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("sec/v1.1.0/login")
+    Observable<LoginResponse> createStory(@FieldMap Map<String, Object> map);
 
     /**
      * @param page
@@ -54,22 +61,41 @@ public interface IdeaApiService {
     @GET("everySay/selectAll.do")
     Observable<List<MeiZi>> lookBack(@Query("page") int page, @Query("rows") int number);
 
+    /**
+     * 单文件上传 方法一
+     * @param partList
+     * @return
+     */
     @Multipart
     @POST("upload/uploadFile.do")
     Observable<BasicResponse> uploadFiles(@Part List<MultipartBody.Part> partList);
 
+    /**
+     * 单文件上传 方法二
+     * @return
+     */
+    @Multipart
+    @POST("upload/uploadFile.do")
+    Observable<BasicResponse<BasicResponse>> uploadFiles(@Part("phone") RequestBody phone,@Part("password") RequestBody password,@Part MultipartBody.Part image);
 
+    /**
+     * 多文件上传 方法一
+     * @param description
+     * @param imgs1
+     * @param imgs2
+     * @return
+     */
     @POST("upload/uploadFile.do")
     Observable<BasicResponse> uploadFiles(@Part("filename") String description,
                                           @Part("pic\"; filename=\"image1.png") RequestBody imgs1,
                                           @Part("pic\"; filename=\"image2.png") RequestBody imgs2);
 
-
+    /**
+     * 多文件上传 方法二
+     * @param description
+     * @param maps
+     * @return
+     */
     @POST("upload/uploadFile.do")
     Observable<BasicResponse> uploadFiles(@Part("filename") String description, @PartMap() Map<String, RequestBody> maps);
-
-    @Streaming
-    @GET
-//("download.do")
-    Observable<ResponseBody> download(@Url String url);//直接使用网址下载
 }

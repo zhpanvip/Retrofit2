@@ -2,7 +2,7 @@ package com.zhpan.idea.net.download;
 
 
 import com.zhpan.idea.net.common.CommonService;
-import com.zhpan.idea.net.common.RetrofitService;
+import com.zhpan.idea.net.common.RetrofitUtils;
 import com.zhpan.idea.net.common.Constants;
 
 import io.reactivex.Observer;
@@ -51,9 +51,9 @@ public class DownloadUtils {
     }
 
     private CommonService getApiService() {
-        OkHttpClient.Builder httpClientBuilder = RetrofitService.getOkHttpClientBuilder();
+        OkHttpClient.Builder httpClientBuilder = RetrofitUtils.getOkHttpClientBuilder();
         ProgressHelper.addProgress(httpClientBuilder);
-        CommonService ideaApiService = RetrofitService.getRetrofitBuilder(Constants.API_SERVER_URL)
+        CommonService ideaApiService = RetrofitUtils.getRetrofitBuilder(Constants.API_SERVER_URL)
                 .client(httpClientBuilder.build())
                 .build()
                 .create(CommonService.class);

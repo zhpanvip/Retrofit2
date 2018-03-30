@@ -24,7 +24,6 @@ import com.zhpan.idea.net.download.DownloadListener;
 import com.zhpan.idea.net.download.DownloadUtils;
 import com.zhpan.idea.utils.FileUtils;
 import com.zhpan.idea.utils.LogUtils;
-import com.zhpan.idea.utils.SharedPreferencesHelper;
 import com.zhpan.idea.utils.ToastUtils;
 
 import java.io.BufferedInputStream;
@@ -81,14 +80,7 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new DefaultObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
-                       // LoginResponse results = response.getResults();
-                        ToastUtils.show("登录成功！获取到token" + response.getToken() + ",可以存储到本地了");
-                        /**
-                         * 可以将这些数据存储到User中，User存储到本地数据库
-                         */
-                        SharedPreferencesHelper.put(MainActivity.this, "token", response.getToken());
-                        SharedPreferencesHelper.put(MainActivity.this, "refresh_token", response.getRefresh_token());
-                        SharedPreferencesHelper.put(MainActivity.this, "refresh_secret", response.getRefresh_secret());
+                        ToastUtils.show("登录成功");
                     }
                 });
     }
@@ -113,15 +105,11 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 上传文件
+     * 单文件上传 方法一
      */
-    public void uploadFile(View view) {
-        /********************************方法一**********************************/
-        String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String filePath = fileStoreDir + "/test/test.txt";
-        FileUtils.createOrExistsFile(filePath);
+    public void uploadFile1(View view) {
         //文件路径
-        File file = new File(filePath);
+        File file = getFile();
         RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -129,16 +117,6 @@ public class MainActivity extends BaseActivity {
                 .addFormDataPart("password", "123123")
                 .addFormDataPart("uploadFile", file.getName(), fileBody);
         List<MultipartBody.Part> parts = builder.build().parts();
-
-        /********************************方法二**********************************/
-        /*//  图片参数
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile);
-        //  手机号参数
-        RequestBody phoneBody = RequestBody.create(MediaType.parse("multipart/form-data"), phone);
-        //  密码参数
-        RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), password);*/
-
         RetrofitHelper.getApiService()
                 .uploadFiles(parts)
                 .subscribeOn(Schedulers.io())
@@ -153,13 +131,37 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    public void cancelDownload(View view) {
-        if (downloadUtils != null) {
-            downloadUtils.cancelDownload();
-            btn.setClickable(true);
-        }
+    /**
+     * 单文件上传 方法二
+     */
+    public void uploadFile2(View view) {
+        File file = getFile();
+        //  图片参数
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile);
+        //  手机号参数
+        RequestBody phoneBody = RequestBody.create(MediaType.parse("multipart/form-data"), "12345678909");
+        //  密码参数
+        RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), "123123");
+
+        RetrofitHelper.getApiService()
+                .uploadFiles(phoneBody,pswBody,fileBody)
+                .subscribeOn(Schedulers.io())
+                .compose(this.<BasicResponse>bindToLifecycle())
+                .compose(ProgressUtils.<BasicResponse>applyProgressBar(this, "上传文件..."))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DefaultObserver<BasicResponse>() {
+                    @Override
+                    public void onSuccess(BasicResponse response) {
+                        ToastUtils.show("文件上传成功");
+                    }
+                });
     }
 
+    /**
+     * 下载文件
+     * @param view
+     */
     public void download(View view) {
         btn.setClickable(false);
         downloadUtils.download(Constants.DOWNLOAD_URL, new DownloadListener() {
@@ -190,6 +192,17 @@ public class MainActivity extends BaseActivity {
                 btn.setClickable(true);
             }
         });
+    }
+
+    /**
+     * 取消下载
+     * @param view
+     */
+    public void cancelDownload(View view) {
+        if (downloadUtils != null) {
+            downloadUtils.cancelDownload();
+            btn.setClickable(true);
+        }
     }
 
     private void saveFile(ResponseBody body) {
@@ -223,4 +236,11 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    private File getFile(){
+        String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String filePath = fileStoreDir + "/test/test.txt";
+        FileUtils.createOrExistsFile(filePath);
+        //文件路径
+        return new File(filePath);
+    }
 }
