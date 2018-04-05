@@ -5,6 +5,7 @@ import android.widget.Toast;
 import com.google.gson.JsonParseException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 import com.zhpan.idea.R;
+import com.zhpan.idea.net.exception.NoDataExceptionException;
 import com.zhpan.idea.net.exception.ServerResponseException;
 import com.zhpan.idea.utils.LogUtils;
 import com.zhpan.idea.utils.ToastUtils;
@@ -52,6 +53,8 @@ public abstract class DefaultObserver<T> implements Observer<T> {
             onException(ExceptionReason.PARSE_ERROR);
         }else if(e instanceof ServerResponseException){
             onFail(e.getMessage());
+        }else if (e instanceof NoDataExceptionException){
+            onSuccess(null);
         } else {
             onException(ExceptionReason.UNKNOWN_ERROR);
         }

@@ -18,6 +18,7 @@ package com.zhpan.idea.net.converter;
 
 import com.google.gson.TypeAdapter;
 import com.zhpan.idea.net.common.BasicResponse;
+import com.zhpan.idea.net.exception.NoDataExceptionException;
 import com.zhpan.idea.net.exception.ServerResponseException;
 
 import java.io.IOException;
@@ -41,7 +42,9 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, Obje
                 // 特定 API 的错误，在相应的 DefaultObserver 的 onError 的方法中进行处理
                 throw new ServerResponseException(response.getCode(), response.getMessage());
             } else if (!response.isError()) {
+                if(response.getResults()!=null)
                 return response.getResults();
+                else throw new NoDataExceptionException();
             }
         } finally {
             value.close();

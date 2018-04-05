@@ -50,7 +50,7 @@ public interface IdeaApiService {
      */
     @FormUrlEncoded
     @POST("sec/v1.1.0/login")
-    Observable<LoginResponse> createStory(@FieldMap Map<String, Object> map);
+    Observable<LoginResponse> login(@FieldMap Map<String, Object> map);
 
     /**
      * @param page
