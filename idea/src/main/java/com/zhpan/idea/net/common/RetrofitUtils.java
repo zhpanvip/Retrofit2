@@ -6,6 +6,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.zhpan.idea.net.converter.GsonConverterFactory;
 import com.zhpan.idea.net.interceptor.HttpCacheInterceptor;
 import com.zhpan.idea.net.interceptor.HttpHeaderInterceptor;
+import com.zhpan.idea.net.interceptor.LoggingInterceptor;
 import com.zhpan.idea.utils.LogUtils;
 import com.zhpan.idea.utils.Utils;
 
@@ -25,27 +26,13 @@ import retrofit2.Retrofit;
 
 public class RetrofitUtils {
     public static OkHttpClient.Builder getOkHttpClientBuilder() {
-
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-            @Override
-            public void log(String message) {
-                try {
-                    LogUtils.e("OKHttp-----", URLDecoder.decode(message, "utf-8"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    LogUtils.e("OKHttp-----", message);
-                }
-            }
-        });
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
         File cacheFile = new File(Utils.getContext().getCacheDir(), "cache");
         Cache cache = new Cache(cacheFile, 1024 * 1024 * 100); //100Mb
 
         return new OkHttpClient.Builder()
                 .readTimeout(Constants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .connectTimeout(Constants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-                .addInterceptor(loggingInterceptor)
+                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new HttpHeaderInterceptor())
                 .addNetworkInterceptor(new HttpCacheInterceptor())
                // .sslSocketFactory(SslContextFactory.getSSLSocketFactoryForTwoWay())  // https认证 如果要使用https且为自定义证书 可以去掉这两行注释，并自行配制证书。

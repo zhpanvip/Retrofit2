@@ -34,15 +34,12 @@ public class SslContextFactory {
      */
     public static SSLSocketFactory getSSLSocketFactoryForOneWay(InputStream... certificates) {
         try {
-            //  12306证书流
-           // InputStream certificate12306 = Utils.getContext().getResources().openRawResource(R.raw.srca);
             CertificateFactory certificateFactory = CertificateFactory.getInstance(CLIENT_TRUST_MANAGER, CLIENT_TRUST_PROVIDER);
             KeyStore keyStore = KeyStore.getInstance(CLIENT_TRUST_KEYSTORE);
             keyStore.load(null);
             int index = 0;
             for (InputStream certificate : certificates) {
                 String certificateAlias = Integer.toString(index++);
-                Certificate certificate1 = certificateFactory.generateCertificate(certificate);
                 keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
                 try {
                     if (certificate != null)
