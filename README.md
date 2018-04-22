@@ -1,7 +1,16 @@
 # Retrofit2
-Rxjava2+Retrofit2二次封装
 
 **关于token处理请切换到token分支**
+
+封装针对如下json数据格式结合Rxjava2和Retrofit2的二次封装
+{
+ "code": 200,
+ "message": "成功",
+ "results": {
+    ...
+    }
+}
+
 
 使用方法：
 
