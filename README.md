@@ -3,13 +3,14 @@
 **关于token处理请切换到token分支**
 
 封装针对如下json数据格式结合Rxjava2和Retrofit2的二次封装
-{
- "code": 200,
- "message": "成功",
- "results": {
-    ...
-    }
-}
+
+\n{
+ \n"code": 200,
+ \n"message": "成功",
+ \n"results": {
+    \n...
+    \n}
+\n}
 
 
 使用方法：
