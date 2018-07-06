@@ -7,10 +7,9 @@ import com.zhpan.idea.net.common.IdeaApi;
 public class RetrofitHelper {
     private static IdeaApiService mIdeaApiService;
 
-    public static IdeaApiService getApiService(){
+    public static IdeaApiService getApiService() {
+        if (mIdeaApiService == null)
+            mIdeaApiService = IdeaApi.getApiService(IdeaApiService.class, Constants.API_SERVER_URL);
         return mIdeaApiService;
-    }
-    static {
-       mIdeaApiService= IdeaApi.getApiService(IdeaApiService.class, Constants.API_SERVER_URL);
     }
 }
