@@ -24,6 +24,7 @@ import com.zhpan.idea.net.download.DownloadListener;
 import com.zhpan.idea.net.download.DownloadUtils;
 import com.zhpan.idea.utils.FileUtils;
 import com.zhpan.idea.utils.LogUtils;
+import com.zhpan.idea.utils.RxUtil;
 import com.zhpan.idea.utils.ToastUtils;
 
 import java.io.BufferedInputStream;
@@ -73,10 +74,7 @@ public class MainActivity extends BaseActivity {
         loginRequest.setPassword("123123");
         RetrofitHelper.getApiService()
                 .login(loginRequest)
-                .subscribeOn(Schedulers.io())
-                .compose(this.<LoginResponse>bindToLifecycle())
-                .compose(ProgressUtils.<LoginResponse>applyProgressBar(this))
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtil.<LoginResponse>rxSchedulerHelper(this))
                 .subscribe(new DefaultObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
@@ -87,15 +85,13 @@ public class MainActivity extends BaseActivity {
 
     /**
      * Get请求
+     *
      * @param view
      */
     public void getData(View view) {
         RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<List<MeiZi>>bindToLifecycle())
-                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtil.<List<MeiZi>>rxSchedulerHelper(this))
                 .subscribe(new DefaultObserver<List<MeiZi>>() {
                     @Override
                     public void onSuccess(List<MeiZi> response) {
@@ -145,7 +141,7 @@ public class MainActivity extends BaseActivity {
         RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), "123123");
 
         RetrofitHelper.getApiService()
-                .uploadFiles(phoneBody,pswBody,fileBody)
+                .uploadFiles(phoneBody, pswBody, fileBody)
                 .subscribeOn(Schedulers.io())
                 .compose(this.<BasicResponse>bindToLifecycle())
                 .compose(ProgressUtils.<BasicResponse>applyProgressBar(this, "上传文件..."))
@@ -160,6 +156,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 下载文件
+     *
      * @param view
      */
     public void download(View view) {
@@ -196,6 +193,7 @@ public class MainActivity extends BaseActivity {
 
     /**
      * 取消下载
+     *
      * @param view
      */
     public void cancelDownload(View view) {
@@ -236,7 +234,7 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private File getFile(){
+    private File getFile() {
         String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
         String filePath = fileStoreDir + "/test/test.txt";
         FileUtils.createOrExistsFile(filePath);
