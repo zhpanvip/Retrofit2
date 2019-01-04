@@ -14,17 +14,19 @@ public abstract class DownloadProgressHandler extends ProgressHandler {
 
     @Override
     protected void sendMessage(ProgressBean progressBean) {
-        mHandler.obtainMessage(DOWNLOAD_PROGRESS,progressBean).sendToTarget();
+        mHandler.obtainMessage(DOWNLOAD_PROGRESS, progressBean).sendToTarget();
 
     }
 
     @Override
-    protected void handleMessage(Message message){
-        switch (message.what){
+    protected void handleMessage(Message message) {
+        switch (message.what) {
             case DOWNLOAD_PROGRESS:
-                ProgressBean progressBean = (ProgressBean)message.obj;
-                onProgress(progressBean.getBytesRead(),progressBean.getContentLength(),progressBean.isDone());
-
+                ProgressBean progressBean = (ProgressBean) message.obj;
+                onProgress(progressBean.getBytesRead(), progressBean.getContentLength(), progressBean.isDone());
+                break;
+            default:
+                break;
         }
     }
 }

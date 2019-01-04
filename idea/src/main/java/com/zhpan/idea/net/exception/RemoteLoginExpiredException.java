@@ -1,24 +1,20 @@
+
 package com.zhpan.idea.net.exception;
 
 import com.zhpan.idea.net.common.ErrorCode;
 
 /**
- * 服务器返回的异常
+ * Created by zhpan on 2018/3/27.
  */
-public class ServerResponseException extends RuntimeException {
-
+public class RemoteLoginExpiredException extends RuntimeException {
     private int errorCode;
 
-    public ServerResponseException(int errorCode, String cause) {
+    public RemoteLoginExpiredException(int errorCode, String cause) {
         super(ErrorCode.getErrorMessage(errorCode), new Throwable(cause));
         this.errorCode = errorCode;
     }
 
     public int getErrorCode() {
         return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
     }
 }

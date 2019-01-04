@@ -5,6 +5,8 @@ import com.zhpan.idea.net.common.CommonService;
 import com.zhpan.idea.net.common.RetrofitUtils;
 import com.zhpan.idea.net.common.Constants;
 
+import java.util.Map;
+
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
@@ -14,6 +16,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.http.Url;
 
 /**
  * Created by zhpan on 2018/3/21.
@@ -33,7 +36,7 @@ public class DownloadUtils {
      *
      * @param url
      */
-    public void download(@NonNull String url, DownloadListener downloadListener) {
+    public void download(@Url String url, DownloadListener downloadListener) {
         mDownloadListener = downloadListener;
         getApiService().download(url)
                 .subscribeOn(Schedulers.io())
@@ -42,6 +45,28 @@ public class DownloadUtils {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getObserver());
     }
+
+    public void download(Map<String,Object> map, DownloadListener downloadListener) {
+        mDownloadListener = downloadListener;
+        getApiService()
+                .downloadFile(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(getConsumer())
+                .subscribe(getObserver());
+    }
+
+    public void download(DwonloadRequest request, DownloadListener downloadListener) {
+        mDownloadListener = downloadListener;
+        getApiService()
+                .downloadFile(request)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(getConsumer())
+                .subscribe(getObserver());
+    }
+
+
 
     /**
      * 取消下载
