@@ -3,6 +3,7 @@ package com.zhpan.idea.net.common;
 
 
 import com.zhpan.idea.net.download.DwonloadRequest;
+import com.zhpan.idea.net.token.RefreshTokenResponse;
 
 import java.util.Map;
 
@@ -31,4 +32,7 @@ public interface CommonService {
     @FormUrlEncoded
     @POST("file/download")
     Observable<ResponseBody> downloadFile(@FieldMap Map<String, Object> map);
+
+    @GET("refresh_token")
+    Observable<RefreshTokenResponse> refreshToken();
 }

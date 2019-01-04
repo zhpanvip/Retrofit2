@@ -3,7 +3,15 @@ package com.cypoem.retrofit.fragment;
 import android.os.Bundle;
 
 import com.cypoem.retrofit.R;
+import com.cypoem.retrofit.module.response.MeiZi;
+import com.cypoem.retrofit.net.RetrofitHelper;
+import com.zhpan.idea.net.common.DefaultObserver;
+import com.zhpan.idea.utils.ProgressUtils;
 
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by zhpan on 2017/9/30.
@@ -24,17 +32,18 @@ public class TestFragment extends BaseFragment {
 
     public void getData() {
 
-       /* IdeaApi.getApiService(IdeaApiService.class)
+        RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<BasicResponse<List<MeiZi>>>bindToLifecycle())
+                .compose(this.<List<MeiZi>>bindToLifecycle())
+                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(getActivity()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse<List<MeiZi>>>(getActivity()) {
+                .subscribe(new DefaultObserver<List<MeiZi>>() {
+
                     @Override
-                    public void onSuccess(BasicResponse<List<MeiZi>> response) {
-                        List<MeiZi> results = response.getResults();
-                        showToast("请求成功，妹子个数为"+results.size());
+                    public void onSuccess(List<MeiZi> response) {
+
                     }
-                });*/
+                });
     }
 }

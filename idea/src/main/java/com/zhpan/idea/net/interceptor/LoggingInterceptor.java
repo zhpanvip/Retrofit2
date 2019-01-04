@@ -15,7 +15,7 @@ import okhttp3.ResponseBody;
 
 public class LoggingInterceptor implements Interceptor {
     @Override
-    public Response intercept(Interceptor.Chain chain) throws IOException {
+    public Response intercept(Chain chain) throws IOException {
         //这个chain里面包含了request和response，所以你要什么都可以从这里拿
         Request request = chain.request();
 

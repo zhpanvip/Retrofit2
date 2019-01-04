@@ -7,17 +7,13 @@ import com.zhpan.idea.net.converter.GsonConverterFactory;
 import com.zhpan.idea.net.interceptor.HttpCacheInterceptor;
 import com.zhpan.idea.net.interceptor.HttpHeaderInterceptor;
 import com.zhpan.idea.net.interceptor.LoggingInterceptor;
-import com.zhpan.idea.utils.LogUtils;
 import com.zhpan.idea.utils.Utils;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 
 /**

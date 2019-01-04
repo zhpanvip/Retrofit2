@@ -1,4 +1,4 @@
-package com.zhpan.idea.net.common;
+package com.zhpan.idea.utils;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;

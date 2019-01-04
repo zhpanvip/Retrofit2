@@ -1,18 +1,28 @@
-package com.cypoem.retrofit.module.reponse;
+package com.cypoem.retrofit.module.response;
 
 
-import com.zhpan.idea.net.common.BasicResponse;
+import com.cypoem.retrofit.module.bean.UserBean;
 
 /**
  * Created by zhpan on 2017/10/25.
  * Description:
  */
 
-public class LoginResponse extends BasicResponse {
+public class LoginResponse {
     private String token;
     private String refresh_token;
     private String expired;
     private String refresh_secret;
+
+    private UserBean user;
+
+    public UserBean getUser() {
+        return user;
+    }
+
+    public void setUser(UserBean user) {
+        this.user = user;
+    }
     /**
      * accessToken : *******
      * tokenType : *******

@@ -19,7 +19,7 @@ package com.zhpan.idea.net.converter;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
-import com.zhpan.idea.net.common.BasicResponse;
+import com.zhpan.idea.net.module.BasicResponse;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;

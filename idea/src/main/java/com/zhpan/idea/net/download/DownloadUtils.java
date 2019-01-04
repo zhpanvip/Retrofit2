@@ -2,14 +2,13 @@ package com.zhpan.idea.net.download;
 
 
 import com.zhpan.idea.net.common.CommonService;
-import com.zhpan.idea.net.common.RetrofitUtils;
 import com.zhpan.idea.net.common.Constants;
+import com.zhpan.idea.net.common.RetrofitUtils;
 
 import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;

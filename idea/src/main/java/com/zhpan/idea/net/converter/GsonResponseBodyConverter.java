@@ -17,11 +17,11 @@
 package com.zhpan.idea.net.converter;
 
 import com.google.gson.TypeAdapter;
-import com.zhpan.idea.net.common.BasicResponse;
 import com.zhpan.idea.net.common.ErrorCode;
 import com.zhpan.idea.net.exception.NoDataExceptionException;
 import com.zhpan.idea.net.exception.RemoteLoginExpiredException;
 import com.zhpan.idea.net.exception.ServerResponseException;
+import com.zhpan.idea.net.module.BasicResponse;
 
 import java.io.IOException;
 

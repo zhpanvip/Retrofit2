@@ -12,18 +12,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cypoem.retrofit.R;
-import com.cypoem.retrofit.module.reponse.LoginResponse;
-import com.cypoem.retrofit.module.reponse.MeiZi;
 import com.cypoem.retrofit.module.request.LoginRequest;
+import com.cypoem.retrofit.module.response.LoginResponse;
+import com.cypoem.retrofit.module.response.MeiZi;
 import com.cypoem.retrofit.net.RetrofitHelper;
-import com.zhpan.idea.net.common.BasicResponse;
 import com.zhpan.idea.net.common.Constants;
 import com.zhpan.idea.net.common.DefaultObserver;
-import com.zhpan.idea.net.common.ProgressUtils;
 import com.zhpan.idea.net.download.DownloadListener;
 import com.zhpan.idea.net.download.DownloadUtils;
+import com.zhpan.idea.net.module.BasicResponse;
 import com.zhpan.idea.utils.FileUtils;
 import com.zhpan.idea.utils.LogUtils;
+import com.zhpan.idea.utils.ProgressUtils;
 import com.zhpan.idea.utils.RxUtil;
 import com.zhpan.idea.utils.ToastUtils;
 

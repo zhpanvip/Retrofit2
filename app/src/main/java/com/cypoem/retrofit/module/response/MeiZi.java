@@ -1,4 +1,4 @@
-package com.cypoem.retrofit.module.reponse;
+package com.cypoem.retrofit.module.response;
 
 /**
  * Created by zhpan on 2017/9/30.
