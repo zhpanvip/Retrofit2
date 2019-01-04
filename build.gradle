@@ -37,10 +37,11 @@ ext {
     minSdkVersion = 19
     releaseVersionCode = 1
     releaseVersionName = '1.0.0'
+    supportLibVersion = "27.0.2"
 
     rxjava2Version = '2.0.8'
     retrofit2Version = '2.2.0'
-    rxlifecycle='2.1.0'
+    rxlifecycle='2.2.1'
     gsonVersion = '2.8.0'
     butterknifeVersion = '8.5.1'
 }
