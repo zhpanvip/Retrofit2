@@ -17,12 +17,9 @@
 
 Get/Post请求
 ```
-RetrofitHelper.getApiService()
+        RetrofitHelper.getApiService()
                 .getMezi()
-                .compose(this.<List<MeiZi>>bindToLifecycle())
-                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .compose(RxUtil.<List<MeiZi>>rxSchedulerHelper(this))
                 .subscribe(new DefaultObserver<List<MeiZi>>() {
                     @Override
                     public void onSuccess(List<MeiZi> response) {
