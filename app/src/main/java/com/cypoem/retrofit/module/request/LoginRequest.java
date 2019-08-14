@@ -2,8 +2,6 @@ package com.cypoem.retrofit.module.request;
 
 import android.app.Activity;
 import android.content.Context;
-import android.telephony.TelephonyManager;
-
 import com.zhpan.idea.utils.KeyTools;
 
 
@@ -52,7 +50,7 @@ public class LoginRequest extends BasicRequest {
      * @return
      */
     public static String generateAppKey(Context context) {
-        String deviceId = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+        String deviceId = "12345";
         String timeStamp = System.currentTimeMillis() + "";
         return KeyTools.getMD5(deviceId+timeStamp);
     }
