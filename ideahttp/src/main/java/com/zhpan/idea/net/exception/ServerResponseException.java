@@ -10,7 +10,7 @@ public class ServerResponseException extends RuntimeException {
     private int errorCode;
 
     public ServerResponseException(int errorCode, String cause) {
-        super(ErrorCode.getErrorMessage(errorCode), new Throwable(cause));
+        super(ErrorCode.getErrorMessage(errorCode, cause), new Throwable(cause));
         this.errorCode = errorCode;
     }
 

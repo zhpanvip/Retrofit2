@@ -13,26 +13,26 @@ import android.widget.TextView;
 
 import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.reponse.LoginResponse;
-import com.cypoem.retrofit.module.reponse.MeiZi;
-import com.cypoem.retrofit.module.request.LoginRequest;
+import com.cypoem.retrofit.module.request.ArticleWrapper;
 import com.cypoem.retrofit.net.RetrofitHelper;
+import com.cypoem.retrofit.net.ServerConfig;
 import com.zhpan.idea.net.common.BasicResponse;
-import com.zhpan.idea.net.common.Constants;
 import com.zhpan.idea.net.common.DefaultObserver;
 import com.zhpan.idea.net.common.ProgressUtils;
 import com.zhpan.idea.net.download.DownloadListener;
-import com.zhpan.idea.net.download.DownloadUtils;
+import com.cypoem.retrofit.net.DownloadHelper;
 import com.zhpan.idea.utils.FileUtils;
 import com.zhpan.idea.utils.LogUtils;
 import com.zhpan.idea.utils.RxUtil;
-import com.zhpan.idea.utils.ToastUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
     private Button btn;
     ProgressBar progressBar;
     TextView mTvPercent;
-    private DownloadUtils downloadUtils;
+    private DownloadHelper downloadHelper;
 
     @Override
     protected int getLayoutId() {
@@ -59,26 +59,29 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mTvPercent = (TextView) findViewById(R.id.tv_percent);
-        btn = (Button) findViewById(R.id.btn_download);
-        downloadUtils = new DownloadUtils();
+        progressBar = findViewById(R.id.progressBar);
+        mTvPercent = findViewById(R.id.tv_percent);
+        btn = findViewById(R.id.btn_download);
+        downloadHelper = new DownloadHelper();
     }
 
     /**
      * Post请求
      */
     public void login(View view) {
-        LoginRequest loginRequest = new LoginRequest(this);
-        loginRequest.setUserId("123456");
-        loginRequest.setPassword("123123");
+//        LoginRequest loginRequest = new LoginRequest();
+//        loginRequest.setUsername("110120");
+//        loginRequest.setPassword("123456");
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", "110120");
+        map.put("password", "123456");
         RetrofitHelper.getApiService()
-                .login(loginRequest)
+                .login(map)
                 .compose(RxUtil.<LoginResponse>rxSchedulerHelper(this))
                 .subscribe(new DefaultObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
-                        ToastUtils.show("登录成功");
+                        showToast("登录成功");
                     }
                 });
     }
@@ -90,12 +93,12 @@ public class MainActivity extends BaseActivity {
      */
     public void getData(View view) {
         RetrofitHelper.getApiService()
-                .getMezi()
-                .compose(RxUtil.<List<MeiZi>>rxSchedulerHelper(this))
-                .subscribe(new DefaultObserver<List<MeiZi>>() {
+                .getArticle()
+                .compose(RxUtil.<ArticleWrapper>rxSchedulerHelper(this))
+                .subscribe(new DefaultObserver<ArticleWrapper>() {
                     @Override
-                    public void onSuccess(List<MeiZi> response) {
-                        showToast("请求成功，妹子个数为" + response.size());
+                    public void onSuccess(ArticleWrapper response) {
+                        showToast("Request Success，size is：" + response.getDatas().size());
                     }
                 });
     }
@@ -122,7 +125,7 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new DefaultObserver<BasicResponse>() {
                     @Override
                     public void onSuccess(BasicResponse response) {
-                        ToastUtils.show("文件上传成功");
+                        showToast("文件上传成功");
                     }
                 });
     }
@@ -149,7 +152,7 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new DefaultObserver<BasicResponse>() {
                     @Override
                     public void onSuccess(BasicResponse response) {
-                        ToastUtils.show("文件上传成功");
+                        showToast("文件上传成功");
                     }
                 });
     }
@@ -161,13 +164,13 @@ public class MainActivity extends BaseActivity {
      */
     public void download(View view) {
         btn.setClickable(false);
-        downloadUtils.download(Constants.DOWNLOAD_URL, new DownloadListener() {
+        downloadHelper.download(ServerConfig.DOWNLOAD_URL, new DownloadListener() {
             @Override
             public void onProgress(int progress) {
                 LogUtils.e("--------下载进度：" + progress);
                 Log.e("onProgress", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
                 progressBar.setProgress(progress);
-                mTvPercent.setText(String.valueOf(progress) + "%");
+                mTvPercent.setText(progress + "%");
             }
 
             @Override
@@ -179,13 +182,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onFail(String message) {
                 btn.setClickable(true);
-                ToastUtils.show("文件下载失败,失败原因：" + message);
+                showToast("文件下载失败,失败原因：" + message);
                 Log.e("onFail", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
             }
 
             @Override
             public void onComplete() {  //  运行在主线程中
-                ToastUtils.show("文件下载成功");
+                showToast("文件下载成功");
                 btn.setClickable(true);
             }
         });
@@ -197,8 +200,8 @@ public class MainActivity extends BaseActivity {
      * @param view
      */
     public void cancelDownload(View view) {
-        if (downloadUtils != null) {
-            downloadUtils.cancelDownload();
+        if (downloadHelper != null) {
+            downloadHelper.cancelDownload();
             btn.setClickable(true);
         }
     }

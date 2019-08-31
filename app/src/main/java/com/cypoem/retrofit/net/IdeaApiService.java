@@ -1,9 +1,10 @@
 package com.cypoem.retrofit.net;
 
 import com.cypoem.retrofit.module.reponse.LoginResponse;
-import com.cypoem.retrofit.module.reponse.MeiZi;
+import com.cypoem.retrofit.module.request.ArticleWrapper;
 import com.cypoem.retrofit.module.request.LoginRequest;
 import com.zhpan.idea.net.common.BasicResponse;
+import com.zhpan.idea.net.download.DwonloadRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -31,16 +31,15 @@ import retrofit2.http.Url;
 
 public interface IdeaApiService {
 
-    @Headers("Cache-Control: public, max-age=100")
-    @GET("福利/10/1")
-    Observable<List<MeiZi>> getMezi();
+    @GET("article/list/0/json")
+    Observable<ArticleWrapper> getArticle();
 
     /**
      * 登录 appId secret
      * 使用实体类作为参数
      * @return
      */
-    @POST("sec/v1.1.0/login")
+    @POST("user/login")
     Observable<LoginResponse> login(@Body LoginRequest request);
 
     /**
@@ -49,17 +48,9 @@ public interface IdeaApiService {
      * @return
      */
     @FormUrlEncoded
-    @POST("sec/v1.1.0/login")
+    @POST("user/login")
     Observable<LoginResponse> login(@FieldMap Map<String, Object> map);
 
-    /**
-     * @param page
-     * @param number
-     * @return
-     */
-    @Headers("Cache-Control: public, max-age=100")//设置缓存 缓存时间为100s
-    @GET("everySay/selectAll.do")
-    Observable<List<MeiZi>> lookBack(@Query("page") int page, @Query("rows") int number);
 
     /**
      * 单文件上传 方法一
@@ -98,4 +89,15 @@ public interface IdeaApiService {
      */
     @POST("upload/uploadFile.do")
     Observable<BasicResponse> uploadFiles(@Part("filename") String description, @PartMap() Map<String, RequestBody> maps);
+
+    @Streaming
+    @GET//("download.do")
+    Observable<ResponseBody> download(@Url String url);//直接使用网址下载
+
+    @POST("file/download")
+    Observable<ResponseBody> downloadFile(@Body DwonloadRequest downloadRequest);
+
+    @FormUrlEncoded
+    @POST("file/download")
+    Observable<ResponseBody> downloadFile(@FieldMap Map<String, Object> map);
 }

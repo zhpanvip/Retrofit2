@@ -43,16 +43,16 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, Obje
     public Object convert(ResponseBody value) throws IOException {
         try {
             BasicResponse response = (BasicResponse) adapter.fromJson(value.charStream());
-            if (response.getCode() == ErrorCode.SUCCESS) {
-                if (response.getResults() != null) {
-                    return response.getResults();
+            if (response.getErrorCode() == ErrorCode.SUCCESS) {
+                if (response.getData() != null) {
+                    return response.getData();
                 } else {
                     throw new NoDataExceptionException();
                 }
-            } else if (response.getCode() == REMOTE_LOGIN) {
-                throw new RemoteLoginExpiredException(response.getCode(), response.getMessage());
-            } else if (response.getCode() != SUCCESS) {
-                throw new ServerResponseException(response.getCode(), response.getMessage());
+            } else if (response.getErrorCode() == REMOTE_LOGIN) {
+                throw new RemoteLoginExpiredException(response.getErrorCode(), response.getErrorMsg());
+            } else if (response.getErrorCode() != SUCCESS) {
+                throw new ServerResponseException(response.getErrorCode(), response.getErrorMsg());
             }
             /*if (response.isError()) {
                 // 特定 API 的错误，在相应的 DefaultObserver 的 onError 的方法中进行处理

@@ -1,15 +1,16 @@
-package com.zhpan.idea.net.download;
+package com.cypoem.retrofit.net;
 
 
-import com.zhpan.idea.net.common.CommonService;
 import com.zhpan.idea.net.common.RetrofitUtils;
-import com.zhpan.idea.net.common.Constants;
+import com.zhpan.idea.net.download.DownloadListener;
+import com.zhpan.idea.net.download.DownloadProgressHandler;
+import com.zhpan.idea.net.download.DwonloadRequest;
+import com.zhpan.idea.net.download.ProgressHelper;
 
 import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -18,16 +19,19 @@ import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.http.Url;
 
+import static com.cypoem.retrofit.net.ServerConfig.BASE_URL;
+
 /**
  * Created by zhpan on 2018/3/21.
  */
 
-public class DownloadUtils {
-    private static final String TAG = "DownloadUtils";
+public class DownloadHelper {
+
     private DownloadListener mDownloadListener;
+
     private CompositeDisposable mDisposables;
 
-    public DownloadUtils() {
+    public DownloadHelper() {
         mDisposables = new CompositeDisposable();
     }
 
@@ -46,7 +50,7 @@ public class DownloadUtils {
                 .subscribe(getObserver());
     }
 
-    public void download(Map<String,Object> map, DownloadListener downloadListener) {
+    public void download(Map<String, Object> map, DownloadListener downloadListener) {
         mDownloadListener = downloadListener;
         getApiService()
                 .downloadFile(map)
@@ -67,7 +71,6 @@ public class DownloadUtils {
     }
 
 
-
     /**
      * 取消下载
      */
@@ -75,13 +78,13 @@ public class DownloadUtils {
         mDisposables.clear();
     }
 
-    private CommonService getApiService() {
+    private IdeaApiService getApiService() {
         OkHttpClient.Builder httpClientBuilder = RetrofitUtils.getOkHttpClientBuilder();
         ProgressHelper.addProgress(httpClientBuilder);
-        CommonService ideaApiService = RetrofitUtils.getRetrofitBuilder(Constants.API_SERVER_URL)
+        IdeaApiService ideaApiService = RetrofitUtils.getRetrofitBuilder(BASE_URL)
                 .client(httpClientBuilder.build())
                 .build()
-                .create(CommonService.class);
+                .create(IdeaApiService.class);
         ProgressHelper.setProgressHandler(new DownloadProgressHandler() {
             @Override
             protected void onProgress(long bytesRead, long contentLength, boolean done) {
@@ -111,7 +114,7 @@ public class DownloadUtils {
 
             @Override
             public void onNext(ResponseBody responseBody) {
-               // mDownloadListener.onComplete();
+                // mDownloadListener.onComplete();
             }
 
             @Override
