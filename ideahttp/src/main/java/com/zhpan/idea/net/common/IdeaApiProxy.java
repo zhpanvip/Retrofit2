@@ -17,6 +17,6 @@ public class IdeaApiProxy {
     public <T> T getApiService(Class<T> tClass,String baseUrl,IGlobalManager manager) {
         T t = RetrofitService.getRetrofitBuilder(baseUrl)
                 .build().create(tClass);
-        return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class<?>[] { tClass }, new ProxyHandler(t, manager));
+        return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class<?>[] { tClass }, new ProxyHandler(t, manager,baseUrl));
     }
 }

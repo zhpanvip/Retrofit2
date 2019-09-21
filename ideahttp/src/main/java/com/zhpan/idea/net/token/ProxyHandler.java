@@ -4,7 +4,6 @@ package com.zhpan.idea.net.token;
 import android.text.TextUtils;
 
 import com.zhpan.idea.net.common.CommonService;
-import com.zhpan.idea.net.common.Constants;
 import com.zhpan.idea.net.common.DefaultObserver;
 import com.zhpan.idea.net.common.RetrofitService;
 import com.zhpan.idea.net.exception.TokenInvalidException;
@@ -44,7 +43,10 @@ public class ProxyHandler implements InvocationHandler {
     private Object mProxyObject;
     private IGlobalManager mGlobalManager;
 
-    public ProxyHandler(Object proxyObject, IGlobalManager globalManager) {
+    private String mBaseUrl;
+
+    public ProxyHandler(Object proxyObject, IGlobalManager globalManager, String baseUrl) {
+        mBaseUrl = baseUrl;
         mProxyObject = proxyObject;
         mGlobalManager = globalManager;
     }
@@ -62,7 +64,7 @@ public class ProxyHandler implements InvocationHandler {
                 return Observable.just(true);
             } else {
                 RetrofitService
-                        .getRetrofitBuilder(Constants.API_SERVER_URL)
+                        .getRetrofitBuilder(mBaseUrl)
                         .build()
                         .create(CommonService.class)
                         .refreshToken()
@@ -101,7 +103,7 @@ public class ProxyHandler implements InvocationHandler {
      */
     @SuppressWarnings("unchecked")
     private void updateMethodToken(Method method, Object[] args) {
-        String token = (String) SharedPreferencesHelper.get(Utils.getContext(),"token","");
+        String token = (String) SharedPreferencesHelper.get(Utils.getContext(), "token", "");
         if (mIsTokenNeedRefresh && !TextUtils.isEmpty(token)) {
             Annotation[][] annotationsArray = method.getParameterAnnotations();
             Annotation[] annotations;

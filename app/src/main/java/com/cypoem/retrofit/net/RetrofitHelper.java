@@ -20,7 +20,7 @@ public class RetrofitHelper {
     public static IdeaApiService getApiService() {
         if (mIdeaApiService == null)
             mIdeaApiService = new IdeaApiProxy().getApiService(IdeaApiService.class,
-                    Constants.API_SERVER_URL, new IGlobalManager() {
+                    ServerConfig.BASE_URL, new IGlobalManager() {
                         @Override
                         public void logout() {
                           UserInfoTools.logout(Utils.getContext());

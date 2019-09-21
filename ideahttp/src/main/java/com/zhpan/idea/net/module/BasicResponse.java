@@ -5,40 +5,32 @@ package com.zhpan.idea.net.module;
  */
 public class BasicResponse<T> {
 
-    private int code;
-    private String message;
-    private T results;
-    private boolean error;
+    private int errorCode;
+    private String errorMsg;
+    private T data;
 
-    public T getResults() {
-        return results;
+    public T getData() {
+        return data;
     }
 
-    public void setResults(T results) {
-        this.results = results;
+    public void setData(T results) {
+        this.data = results;
     }
 
-    public boolean isError() {
-        return error;
-    }
 
-    public void setError(boolean error) {
-        this.error = error;
-    }
-
-    public int getCode() {
-        return code;
+    public int getErrorCode() {
+        return errorCode;
     }
 
     public void setCode(int code) {
-        this.code = code;
+        this.errorCode = code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorMsg() {
+        return errorMsg;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setErrorMsg(String message) {
+        this.errorMsg = message;
     }
 }

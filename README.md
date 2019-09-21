@@ -13,109 +13,47 @@
 }
 
 
-使用方法：
+# 使用方法：
 
-Get/Post请求
+## Post请求
 ```
-RetrofitHelper.getApiService()
-                .getMezi()
-                .compose(this.<List<MeiZi>>bindToLifecycle())
-                .compose(ProgressUtils.<List<MeiZi>>applyProgressBar(this))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<List<MeiZi>>() {
-                    @Override
-                    public void onSuccess(List<MeiZi> response) {
-                        showToast("请求成功，妹子个数为" + response.size());
-                    }
-                });
-```
+           public void login(View view) {
+       //        LoginRequest loginRequest = new LoginRequest();
+       //        loginRequest.setUsername("110120");
+       //        loginRequest.setPassword("123456");
+               Map<String, Object> map = new HashMap<>();
+               map.put("username", "110120");
+               map.put("password", "123456");
+               RetrofitHelper.getApiService()
+                       .login(map)
+                       .compose(RxUtil.<LoginResponse>rxSchedulerHelper(this))
+                       .subscribe(new DefaultObserver<LoginResponse>() {
+                           @Override
+                           public void onSuccess(LoginResponse response) {
+                               showToast("登录成功");
+                           }
+                       });
+           }
 
-上传文件
-```
- //  上传文件
-    public void uploadFile(View view) {
-        /********************************方法一**********************************/
-        String fileStoreDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String filePath = fileStoreDir+"/test/test.txt";
-        FileUtils.createOrExistsFile(filePath);
-        //文件路径
-        File file = new File(filePath);
-        RequestBody fileBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("phone", "12345678901")
-                .addFormDataPart("password", "123123")
-                .addFormDataPart("uploadFile", file.getName(), fileBody);
-        List<MultipartBody.Part> parts = builder.build().parts();
 
-        /********************************方法二**********************************/
-        /*//  图片参数
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("uploadFile", file.getName(), requestFile);
-        //  手机号参数
-        RequestBody phoneBody = RequestBody.create(MediaType.parse("multipart/form-data"), phone);
-        //  密码参数
-        RequestBody pswBody = RequestBody.create(MediaType.parse("multipart/form-data"), password);*/
-
-        RetrofitHelper.getApiService()
-                .uploadFiles(parts)
-                .subscribeOn(Schedulers.io())
-                .compose(this.<BasicResponse>bindToLifecycle())
-                .compose(ProgressUtils.<BasicResponse>applyProgressBar(this,"上传文件..."))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DefaultObserver<BasicResponse>() {
-                    @Override
-                    public void onSuccess(BasicResponse response) {
-                        ToastUtils.show("文件上传成功");
-                    }
-                });
-    }
 ```
 
+## Get请求
 
-下载
 ```
-DownloadUtils downloadUtils = new DownloadUtils();
-public void download(View view) {
-        btn.setClickable(false);
-        downloadUtils.download(Constants.DOWNLOAD_URL, new DownloadListener() {
-            @Override
-            public void onProgress(int progress) {
-                LogUtils.e("--------下载进度：" + progress);
-                Log.e("onProgress", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-                progressBar.setProgress(progress);
-                mTvPercent.setText(String.valueOf(progress) + "%");
-            }
 
-            @Override
-            public void onSuccess(ResponseBody responseBody) {  //  运行在子线程
-                saveFile(responseBody);
-                Log.e("onSuccess", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-            }
+           public void getData(View view) {
+               RetrofitHelper.getApiService()
+                       .getArticle()
+                       .compose(RxUtil.<ArticleWrapper>rxSchedulerHelper(this))
+                       .subscribe(new DefaultObserver<ArticleWrapper>() {
+                           @Override
+                           public void onSuccess(ArticleWrapper response) {
+                               showToast("Request Success，size is：" + response.getDatas().size());
+                           }
+                       });
+           }
 
-            @Override
-            public void onFail(String message) {
-                btn.setClickable(true);
-                ToastUtils.show("文件下载失败,失败原因：" + message);
-                Log.e("onFail", "是否在主线程中运行:" + String.valueOf(Looper.getMainLooper() == Looper.myLooper()));
-            }
-
-            @Override
-            public void onComplete() {  //  运行在主线程中
-                ToastUtils.show("文件下载成功");
-                btn.setClickable(true);
-            }
-        });
-    }
-```
-取消文件下载
-```
- public void cancelDownload(View view) {
-        if (downloadUtils != null) {
-            downloadUtils.cancelDownload();
-        }
-    }
 ```
 
 
