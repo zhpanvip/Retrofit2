@@ -13,9 +13,9 @@
 }
 
 
-#使用方法：
+# 使用方法：
 
-##Post请求
+## Post请求
 ```
            public void login(View view) {
        //        LoginRequest loginRequest = new LoginRequest();
@@ -38,7 +38,7 @@
 
 ```
 
-##Get请求
+## Get请求
 
 ```
 
