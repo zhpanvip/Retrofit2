@@ -61,8 +61,7 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new DefaultObserver<ArticleWrapper>() {
                     @Override
                     public void onSuccess(ArticleWrapper response) {
-                        if (response != null && response.getDatas() != null)
-                            showToast("Request Success，size is：" + response.getDatas().size());
+                        showToast("Request Success，size is：" + response.getDatas().size());
                     }
                 });
     }

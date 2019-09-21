@@ -10,5 +10,5 @@ public interface Constants {
      */
     int DEFAULT_TIMEOUT = 20000;
 
-    String IP = "202.108.22.59";
+    String IP="202.108.22.59";
 }

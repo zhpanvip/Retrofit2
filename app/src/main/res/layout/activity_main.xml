@@ -25,4 +25,5 @@
         android:layout_marginTop="10dp"
         android:onClick="getData"
         android:text="点击获取网络数据" />
+
 </LinearLayout>

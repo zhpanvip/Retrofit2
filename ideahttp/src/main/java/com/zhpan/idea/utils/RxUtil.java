@@ -4,6 +4,7 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 import com.trello.rxlifecycle2.android.FragmentEvent;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import com.trello.rxlifecycle2.components.support.RxFragment;
+import com.zhpan.idea.net.common.ProgressUtils;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;

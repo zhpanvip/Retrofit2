@@ -2,7 +2,6 @@ package com.cypoem.retrofit.net;
 
 
 import com.cypoem.retrofit.module.bean.UserInfoTools;
-import com.zhpan.idea.net.common.Constants;
 import com.zhpan.idea.net.common.IdeaApiProxy;
 import com.zhpan.idea.net.token.IGlobalManager;
 import com.zhpan.idea.net.token.RefreshTokenResponse;
