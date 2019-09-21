@@ -1,6 +1,6 @@
 package com.cypoem.retrofit.net;
 
-import com.cypoem.retrofit.module.reponse.LoginResponse;
+import com.cypoem.retrofit.module.response.LoginResponse;
 import com.cypoem.retrofit.module.request.ArticleWrapper;
 import com.cypoem.retrofit.module.request.LoginRequest;
 
