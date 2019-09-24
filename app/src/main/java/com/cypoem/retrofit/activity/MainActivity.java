@@ -32,21 +32,25 @@ public class MainActivity extends BaseActivity {
      * Post请求
      */
     public void login(View view) {
-//        LoginRequest loginRequest = new LoginRequest();
-//        loginRequest.setUsername("110120");
-//        loginRequest.setPassword("123456");
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", "110120");
-        map.put("password", "123456");
         RetrofitHelper.getApiService()
-                .login(map)
-                .compose(RxUtil.<LoginResponse>rxSchedulerHelper(this))
+                .login(getParameters())
+                .compose(RxUtil.rxSchedulerHelper(this, true))
                 .subscribe(new DefaultObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
                         showToast("登录成功");
                     }
                 });
+    }
+
+    private Map<String, Object> getParameters() {
+        //  LoginRequest loginRequest = new LoginRequest();
+        //  loginRequest.setUsername("110120");
+        //  loginRequest.setPassword("123456");
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", "110120");
+        map.put("password", "123456");
+        return map;
     }
 
     /**
@@ -57,7 +61,7 @@ public class MainActivity extends BaseActivity {
     public void getData(View view) {
         RetrofitHelper.getApiService()
                 .getArticle()
-                .compose(RxUtil.<ArticleWrapper>rxSchedulerHelper(this))
+                .compose(RxUtil.rxSchedulerHelper(this, true))
                 .subscribe(new DefaultObserver<ArticleWrapper>() {
                     @Override
                     public void onSuccess(ArticleWrapper response) {

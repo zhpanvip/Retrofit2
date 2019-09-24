@@ -15,56 +15,53 @@ import io.reactivex.schedulers.Schedulers;
 public class RxUtil {
 
     /**
-     * 统一线程处理
-     *
-     * @param <T>
-     * @return
+     * @param activity    Activity
+     * @param showLoading 是否显示Loading
+     * @return 转换后的ObservableTransformer
      */
-    public static <T> ObservableTransformer<T, T> rxSchedulerHelper(final RxAppCompatActivity activity) {    //compose简化线程
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public ObservableSource<T> apply(Observable<T> observable) {
-                return observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .compose(ProgressUtils.<T>applyProgressBar(activity))
-                        .compose(activity.<T>bindUntilEvent(ActivityEvent.DESTROY));
-            }
-        };
-    }
-
-    /**
-     * 统一线程处理
-     *
-     * @param <T>
-     * @return
-     */
-    public static <T> ObservableTransformer<T, T> rxSchedulerHelper(final RxFragment fragment) {    //compose简化线程
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public ObservableSource<T> apply(Observable<T> observable) {
-                return observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .compose(ProgressUtils.<T>applyProgressBar(fragment.getActivity()))
-                        .compose(fragment.<T>bindUntilEvent(FragmentEvent.DESTROY_VIEW));
+    public static <T> ObservableTransformer<T, T> rxSchedulerHelper(final RxAppCompatActivity activity, final boolean showLoading) {
+        if (activity == null) return rxSchedulerHelper();
+        return observable -> {
+            Observable<T> compose = observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .compose(ProgressUtils.applyProgressBar(activity))
+                    .compose(activity.bindUntilEvent(ActivityEvent.DESTROY));
+            if (showLoading) {
+                return compose.compose(ProgressUtils.applyProgressBar(activity));
+            } else {
+                return compose;
             }
         };
     }
 
 
+    /**
+     * @param fragment    fragment
+     * @param showLoading 是否显示Loading
+     * @return 转换后的ObservableTransformer
+     */
+    public static <T> ObservableTransformer<T, T> rxSchedulerHelper(final RxFragment fragment, boolean showLoading) {
+        if (fragment == null || fragment.getActivity() == null) return rxSchedulerHelper();
+        return observable -> {
+            Observable<T> compose = observable.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .compose(ProgressUtils.applyProgressBar(fragment.getActivity()))
+                    .compose(fragment.bindUntilEvent(FragmentEvent.DESTROY));
+            if (showLoading) {
+                return compose.compose(ProgressUtils.applyProgressBar(fragment.getActivity()));
+            } else {
+                return compose;
+            }
+        };
+    }
+
 
     /**
      * 统一线程处理
-     *
-     * @param <T>
-     * @return
+     * @return 转换后的ObservableTransformer
      */
-    public static <T> ObservableTransformer<T, T> rxSchedulerHelper() {    //compose简化线程
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public ObservableSource<T> apply(Observable<T> observable) {
-                return observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-            }
-        };
+    public static <T> ObservableTransformer<T, T> rxSchedulerHelper() {
+        return observable -> observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }
