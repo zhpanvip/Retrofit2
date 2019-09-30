@@ -24,35 +24,21 @@ public class ProgressUtils {
         final WeakReference<Activity> activityWeakReference = new WeakReference<>(activity);
         final DialogUtils dialogUtils = new DialogUtils();
         dialogUtils.showProgress(activityWeakReference.get());
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public ObservableSource<T> apply(Observable<T> upstream) {
-                return upstream.doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
+        return upstream -> upstream.doOnSubscribe(disposable -> {
 
-                    }
-                }).doOnTerminate(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        Activity context;
-                        if ((context = activityWeakReference.get()) != null
-                                && !context.isFinishing()) {
-                            dialogUtils.dismissProgress();
-                        }
-                    }
-                }).doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        /*Activity context;
-                        if ((context = activityWeakReference.get()) != null
-                                && !context.isFinishing()) {
-                            dialogUtils.dismissProgress();
-                        }*/
-                    }
-                });
+        }).doOnTerminate(() -> {
+            Activity context;
+            if ((context = activityWeakReference.get()) != null
+                    && !context.isFinishing()) {
+                dialogUtils.dismissProgress();
             }
-        };
+        }).doOnSubscribe((Consumer<Disposable>) disposable -> {
+            /*Activity context;
+            if ((context = activityWeakReference.get()) != null
+                    && !context.isFinishing()) {
+                dialogUtils.dismissProgress();
+            }*/
+        });
     }
 
     public static <T> ObservableTransformer<T, T> applyProgressBar(

@@ -25,7 +25,7 @@ import io.reactivex.disposables.Disposable;
  * Created by zhpan on 2017/4/18.
  */
 
-public abstract class DefaultObserver<T> implements Observer<T> {
+public abstract class ResponseObserver<T> implements Observer<T> {
     @Override
     public void onSubscribe(Disposable d) {
 
@@ -51,9 +51,9 @@ public abstract class DefaultObserver<T> implements Observer<T> {
                 || e instanceof JSONException
                 || e instanceof ParseException) {   //  解析错误
             onException(ExceptionReason.PARSE_ERROR);
-        }else if(e instanceof ServerResponseException){
+        } else if (e instanceof ServerResponseException) {
             onFail(e.getMessage());
-        }else if (e instanceof NoDataExceptionException){
+        } else if (e instanceof NoDataExceptionException) {
             onSuccess(null);
         } else {
             onException(ExceptionReason.UNKNOWN_ERROR);
@@ -83,7 +83,8 @@ public abstract class DefaultObserver<T> implements Observer<T> {
         ToastUtils.show(message);
     }
 
-    public void onFinish(){}
+    public void onFinish() {
+    }
 
     /**
      * 请求异常
