@@ -1,6 +1,6 @@
 # Retrofit2
 
-**关于token处理请切换到[token](https://github.com/zhpanvip/Retrofit2/tree/new_token)分支**
+**关于token处理请切换到[token](https://github.com/zhpanvip/Retrofit2/tree/token)分支**
 
 封装针对如下json数据格式结合Rxjava2和Retrofit2的二次封装
 
