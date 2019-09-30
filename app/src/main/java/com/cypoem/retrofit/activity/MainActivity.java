@@ -7,7 +7,7 @@ import com.cypoem.retrofit.R;
 import com.cypoem.retrofit.module.request.ArticleWrapper;
 import com.cypoem.retrofit.module.response.LoginResponse;
 import com.cypoem.retrofit.net.RetrofitHelper;
-import com.zhpan.idea.net.common.DefaultObserver;
+import com.zhpan.idea.net.common.ResponseObserver;
 import com.zhpan.idea.utils.RxUtil;
 
 import java.util.HashMap;
@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
         RetrofitHelper.getApiService()
                 .login(getParameters())
                 .compose(RxUtil.rxSchedulerHelper(this, true))
-                .subscribe(new DefaultObserver<LoginResponse>() {
+                .subscribe(new ResponseObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
                         showToast("登录成功");
@@ -44,9 +44,6 @@ public class MainActivity extends BaseActivity {
     }
 
     private Map<String, Object> getParameters() {
-        //  LoginRequest loginRequest = new LoginRequest();
-        //  loginRequest.setUsername("110120");
-        //  loginRequest.setPassword("123456");
         Map<String, Object> map = new HashMap<>();
         map.put("username", "110120");
         map.put("password", "123456");
@@ -62,7 +59,7 @@ public class MainActivity extends BaseActivity {
         RetrofitHelper.getApiService()
                 .getArticle()
                 .compose(RxUtil.rxSchedulerHelper(this, true))
-                .subscribe(new DefaultObserver<ArticleWrapper>() {
+                .subscribe(new ResponseObserver<ArticleWrapper>() {
                     @Override
                     public void onSuccess(ArticleWrapper response) {
                         showToast("Request Success，size is：" + response.getDatas().size());

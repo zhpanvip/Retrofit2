@@ -26,6 +26,7 @@ public interface IdeaApiService {
     /**
      * 登录 appId secret
      * 使用实体类作为参数
+     *
      * @return
      */
     @POST("user/login")
@@ -33,6 +34,7 @@ public interface IdeaApiService {
 
     /**
      * 使用map作为参数
+     *
      * @param map
      * @return
      */
