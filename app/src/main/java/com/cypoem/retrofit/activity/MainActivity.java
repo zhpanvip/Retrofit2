@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
     public void login(View view) {
         RetrofitHelper.getApiService()
                 .login(getParameters())
-                .compose(RxUtil.rxSchedulerHelper(this, true))
+                .compose(RxUtil.rxSchedulerHelper(this, false))
                 .subscribe(new ResponseObserver<LoginResponse>() {
                     @Override
                     public void onSuccess(LoginResponse response) {
