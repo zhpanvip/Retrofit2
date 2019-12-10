@@ -24,7 +24,6 @@ public class RxUtil {
         return observable -> {
             Observable<T> compose = observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .compose(ProgressUtils.applyProgressBar(activity))
                     .compose(activity.bindUntilEvent(ActivityEvent.DESTROY));
             if (showLoading) {
                 return compose.compose(ProgressUtils.applyProgressBar(activity));
@@ -45,7 +44,6 @@ public class RxUtil {
         return observable -> {
             Observable<T> compose = observable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .compose(ProgressUtils.applyProgressBar(fragment.getActivity()))
                     .compose(fragment.bindUntilEvent(FragmentEvent.DESTROY));
             if (showLoading) {
                 return compose.compose(ProgressUtils.applyProgressBar(fragment.getActivity()));
