@@ -4,10 +4,10 @@ package com.zhpan.idea.net.token;
 import android.text.TextUtils;
 
 import com.zhpan.idea.net.common.CommonService;
-import com.zhpan.idea.net.common.DefaultObserver;
+import com.zhpan.idea.net.common.ResponseObserver;
 import com.zhpan.idea.net.common.RetrofitService;
-import com.zhpan.idea.net.exception.TokenInvalidException;
-import com.zhpan.idea.net.exception.TokenNotExistException;
+import com.zhpan.idea.net.exception.TokenExpiredException;
+import com.zhpan.idea.net.exception.RefreshTokenExpiredException;
 import com.zhpan.idea.net.module.BaseRequest;
 import com.zhpan.idea.utils.SharedPreferencesHelper;
 import com.zhpan.idea.utils.Utils;
@@ -33,17 +33,16 @@ import retrofit2.http.QueryMap;
 
 public class ProxyHandler implements InvocationHandler {
 
-    private final static String TOKEN = "token";
+    private final static String ACCESS_TOKEN = "access_token";
 
     private final static int REFRESH_TOKEN_VALID_TIME = 30;
     private static long tokenChangedTime = 0;
     private Throwable mRefreshTokenError = null;
-    private boolean mIsTokenNeedRefresh;
+    private boolean needResetAccessToken;
 
-    private Object mProxyObject;
-    private IGlobalManager mGlobalManager;
-
-    private String mBaseUrl;
+    private final Object mProxyObject;
+    private final IGlobalManager mGlobalManager;
+    private final String mBaseUrl;
 
     public ProxyHandler(Object proxyObject, IGlobalManager globalManager, String baseUrl) {
         mBaseUrl = baseUrl;
@@ -52,15 +51,13 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     /**
-     * Refresh the token when the current token is invalid.
-     *
-     * @return Observable
+     * 通过refresh token换取新的access token和refresh token并存储到本地，
+     * 刷新成功后将mIsTokenNeedReset置为true，后边请求会根据mIsTokenNeedReset来重置刷新后的token。
      */
     private Observable<?> refreshTokenWhenTokenInvalid() {
         synchronized (ProxyHandler.class) {
-            // Have refreshed the token successfully in the valid time.
             if (new Date().getTime() - tokenChangedTime < REFRESH_TOKEN_VALID_TIME) {
-                mIsTokenNeedRefresh = true;
+                needResetAccessToken = true;
                 return Observable.just(true);
             } else {
                 RetrofitService
@@ -68,12 +65,12 @@ public class ProxyHandler implements InvocationHandler {
                         .build()
                         .create(CommonService.class)
                         .refreshToken()
-                        .subscribe(new DefaultObserver<RefreshTokenResponse>() {
+                        .subscribe(new ResponseObserver<RefreshTokenResponse>() {
                             @Override
                             public void onSuccess(RefreshTokenResponse response) {
                                 if (response != null) {
                                     mGlobalManager.tokenRefresh(response);
-                                    mIsTokenNeedRefresh = true;
+                                    needResetAccessToken = true;
                                     tokenChangedTime = new Date().getTime();
                                 }
                             }
@@ -86,6 +83,7 @@ public class ProxyHandler implements InvocationHandler {
                         });
                 if (mRefreshTokenError != null) {
                     Observable<Object> error = Observable.error(mRefreshTokenError);
+                    // 这里必须将mRefreshTokenError置空，否则会有问题。
                     mRefreshTokenError = null;
                     return error;
                 } else {
@@ -96,15 +94,15 @@ public class ProxyHandler implements InvocationHandler {
     }
 
     /**
-     * Update the token of the args in the method.
+     * Update the access token of the args in the method.
      * <p>
-     * PS： 因为这里使用的是 GET 请求，所以这里就需要对 Query 的参数名称为 token 的方法。
-     * 若是 POST 请求，或者使用 Body ，自行替换。因为 参数数组已经知道，进行遍历找到相应的值，进行替换即可（更新为新的 token 值）。
+     * access token刷新成功后，再次发起请求需要使用刷新后的access token，
+     * 这个方法会拦截本次请求，根据请求方法注入新的access token。
      */
     @SuppressWarnings("unchecked")
     private void updateMethodToken(Method method, Object[] args) {
         String token = (String) SharedPreferencesHelper.get(Utils.getContext(), "token", "");
-        if (mIsTokenNeedRefresh && !TextUtils.isEmpty(token)) {
+        if (needResetAccessToken && !TextUtils.isEmpty(token)) {
             Annotation[][] annotationsArray = method.getParameterAnnotations();
             Annotation[] annotations;
             if (annotationsArray != null && annotationsArray.length > 0) {
@@ -113,15 +111,15 @@ public class ProxyHandler implements InvocationHandler {
                     for (Annotation annotation : annotations) {
                         if (annotation instanceof FieldMap || annotation instanceof QueryMap) {
                             if (args[i] instanceof Map)
-                                ((Map<String, Object>) args[i]).put(TOKEN, token);
+                                ((Map<String, Object>) args[i]).put(ACCESS_TOKEN, token);
                         } else if (annotation instanceof Query) {
-                            if (TOKEN.equals(((Query) annotation).value()))
+                            if (ACCESS_TOKEN.equals(((Query) annotation).value()))
                                 args[i] = token;
                         } else if (annotation instanceof Field) {
-                            if (TOKEN.equals(((Field) annotation).value()))
+                            if (ACCESS_TOKEN.equals(((Field) annotation).value()))
                                 args[i] = token;
                         } else if (annotation instanceof Part) {
-                            if (TOKEN.equals(((Part) annotation).value())) {
+                            if (ACCESS_TOKEN.equals(((Part) annotation).value())) {
                                 RequestBody tokenBody = RequestBody.create(MediaType.parse("multipart/form-data"), token);
                                 args[i] = tokenBody;
                             }
@@ -135,47 +133,41 @@ public class ProxyHandler implements InvocationHandler {
                     }
                 }
             }
-            mIsTokenNeedRefresh = false;
+            needResetAccessToken = false;
         }
     }
 
     @Override
-    public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-        return Observable.just(true).flatMap(new Function<Object, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Object o) throws Exception {
+    public Object invoke(Object proxy, final Method method, final Object[] args) {
+        return Observable.just(true).flatMap((Function<Object, ObservableSource<?>>) o -> {
+            try {
                 try {
-                    try {
-                        if (mIsTokenNeedRefresh) {
-                            updateMethodToken(method, args);
-                        }
-                        return (Observable<?>) method.invoke(mProxyObject, args);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+                    /**
+                     * 如果mIsTokenNeedReset为true,则说明本次请求是在成功access token成功刷新后
+                     * 自动调用，而此时方法中的access token参数仍然为旧的access token，因此需要
+                     * 将这个方法中的access token参数重置为刷新后的access token参数
+                     */
+                    if (needResetAccessToken) {
+                        updateMethodToken(method, args);
                     }
-                } catch (IllegalAccessException e) {
+                    return (Observable<?>) method.invoke(mProxyObject, args);
+                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
-                return null;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        }).retryWhen(new Function<Observable<Throwable>, ObservableSource<?>>() {
-            @Override
-            public ObservableSource<?> apply(Observable<Throwable> observable) throws Exception {
-                return observable.flatMap(new Function<Throwable, ObservableSource<?>>() {
-                    @Override
-                    public ObservableSource<?> apply(Throwable throwable) throws Exception {
-                        if (throwable instanceof TokenInvalidException) {
-                            return refreshTokenWhenTokenInvalid();
-                        } else if (throwable instanceof TokenNotExistException) {
-                            // Token 不存在，执行退出登录的操作。（为了防止多个请求，都出现 Token 不存在的问题，
-                            // 这里需要取消当前所有的网络请求）
-                            mGlobalManager.logout();
-                            return Observable.error(throwable);
-                        }
-                        return Observable.error(throwable);
-                    }
-                });
+            return null;
+        }).retryWhen(observable -> observable.flatMap((Function<Throwable, ObservableSource<?>>) throwable -> {
+            if (throwable instanceof TokenExpiredException) { // 捕捉到token过期异常，则需要刷新token
+                return refreshTokenWhenTokenInvalid();
+            } else if (throwable instanceof RefreshTokenExpiredException) {
+                // Token 不存在，执行退出登录的操作。（为了防止多个请求，都出现 Token 不存在的问题，
+                // 这里需要取消当前所有的网络请求）
+                mGlobalManager.logout();
+                return Observable.error(throwable);
             }
-        });
+            return Observable.error(throwable);
+        }));
     }
 }

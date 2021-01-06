@@ -16,17 +16,23 @@ public class ErrorCode {
     public static final int SUCCESS = 0;
 
     public static final int REQUEST_FAILED = -1;
+
+    /**
+     * access token过期错误码
+     */
+    public static final int TOKEN_EXPIRED = -2001;
+    /**
+     * refresh token过期错误码
+     */
+    public static final int REFRESH_TOKEN_EXPIRED = -2002;
+
     /**
      * 登录状态失效
      */
     public static final int INVALID_LOGIN_STATUS = -1001;
-
     public static final int VERIFY_CODE_ERROR = 110011;
-
     public static final int VERIFY_CODE_EXPIRED = 110010;
-
     public static final int ACCOUNT_NOT_REGISTER = 110009;
-
     public static final int PASSWORD_ERROR = 110012;
 
     /**

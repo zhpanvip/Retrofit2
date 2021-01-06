@@ -17,10 +17,10 @@
 package com.zhpan.idea.net.converter;
 
 import com.google.gson.TypeAdapter;
-import com.zhpan.idea.net.common.ErrorCode;
 import com.zhpan.idea.net.exception.NoDataExceptionException;
-import com.zhpan.idea.net.exception.RemoteLoginExpiredException;
+import com.zhpan.idea.net.exception.RefreshTokenExpiredException;
 import com.zhpan.idea.net.exception.ServerResponseException;
+import com.zhpan.idea.net.exception.TokenExpiredException;
 import com.zhpan.idea.net.module.BasicResponse;
 
 import java.io.IOException;
@@ -28,8 +28,9 @@ import java.io.IOException;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
-import static com.zhpan.idea.net.common.ErrorCode.REMOTE_LOGIN;
+import static com.zhpan.idea.net.common.ErrorCode.REFRESH_TOKEN_EXPIRED;
 import static com.zhpan.idea.net.common.ErrorCode.SUCCESS;
+import static com.zhpan.idea.net.common.ErrorCode.TOKEN_EXPIRED;
 
 final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, Object> {
 
@@ -40,28 +41,21 @@ final class GsonResponseBodyConverter<T> implements Converter<ResponseBody, Obje
     }
 
     @Override
-    public Object convert(ResponseBody value) throws IOException {
+    public  Object convert(ResponseBody value) throws IOException {
         try {
             BasicResponse response = (BasicResponse) adapter.fromJson(value.charStream());
-            if (response.getErrorCode() == ErrorCode.SUCCESS) {
-                if (response.getData() != null) {
-                    return response.getData();
-                } else {
+            if (response.getErrorCode() == SUCCESS) {
+                if (response.getData() == null)
                     throw new NoDataExceptionException();
-                }
-            } else if (response.getErrorCode() == REMOTE_LOGIN) {
-                throw new RemoteLoginExpiredException(response.getErrorCode(), response.getErrorMsg());
+                return response.getData();
+            } else if (response.getErrorCode() == TOKEN_EXPIRED) {
+                throw new TokenExpiredException(response.getErrorCode(), response.getErrorMsg());
+            } else if (response.getErrorCode() == REFRESH_TOKEN_EXPIRED) {
+                throw new RefreshTokenExpiredException(response.getErrorCode(), response.getErrorMsg());
             } else if (response.getErrorCode() != SUCCESS) {
+                // 特定 API 的错误，在相应的 DefaultObserver 的 onError 的方法中进行处理
                 throw new ServerResponseException(response.getErrorCode(), response.getErrorMsg());
             }
-            /*if (response.isError()) {
-                // 特定 API 的错误，在相应的 DefaultObserver 的 onError 的方法中进行处理
-                throw new ServerResponseException(response.getCode(), response.getMessage());
-            } else if (!response.isError()) {
-                if (response.getResults() != null)
-                    return response.getResults();
-                else throw new NoDataExceptionException();
-            }*/
         } finally {
             value.close();
         }

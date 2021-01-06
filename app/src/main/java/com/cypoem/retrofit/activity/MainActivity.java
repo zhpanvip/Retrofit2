@@ -40,6 +40,12 @@ public class MainActivity extends BaseActivity {
                     public void onSuccess(LoginResponse response) {
                         showToast("登录成功");
                     }
+
+                    @Override
+                    public void onFail(String message) {
+                        super.onFail(message);
+
+                    }
                 });
     }
 
@@ -63,6 +69,11 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onSuccess(ArticleWrapper response) {
                         showToast("Request Success，size is：" + response.getDatas().size());
+                    }
+
+                    @Override
+                    public void onFail(String message) {
+                        super.onFail(message);
                     }
                 });
     }
